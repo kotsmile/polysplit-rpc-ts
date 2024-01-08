@@ -1,0 +1,93 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider = "zod-prisma"
+  output   = "../src/services/db/zod"
+}
+
+enum ChainType {
+  EVM
+}
+
+enum ChainEnvType {
+  MAINNET
+  TESTNET
+}
+
+model Chain {
+  id String @id @unique
+  // name      String
+  // type      ChainType
+  // env_type  ChainEnvType
+  // image_url String       @default("https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg")
+  //
+  // native_currency_name     String
+  // native_currency_symbol   String
+  // native_currency_decimals Int
+  //
+  // block_explorers String[]
+
+  rpcs Rpc[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum RpcType {
+  HTTPS
+}
+
+enum RpcStatus {
+  OK
+  ERROR
+  NONE
+}
+
+model Rpc {
+  id       String @id @unique @default(uuid())
+  chain_id String
+
+  type RpcType
+  url  String
+
+  height        Int
+  response_time Int
+  status        RpcStatus
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  chain Chain @relation(fields: [chain_id], references: [id])
+}
+
+// model Contract {
+//   id String @id @unique @default(uuid())
+//
+//   chain_id      String
+//   address       String
+//   block_created Int
+//   abi           String
+//
+//   created_at DateTime @default(now())
+//   updated_at DateTime @updatedAt
+//
+//   chain Chain @relation(fields: [chain_id], references: [id])
+// }
+
+// model User {
+//   email         String  @id @unique
+//   hash_password String?
+//
+//   api_token   String @unique
+//   total_usage Int
+//
+//   created_at DateTime @default(now())
+//   updated_at DateTime @updatedAt
+// }
