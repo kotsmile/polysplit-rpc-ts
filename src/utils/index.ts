@@ -1,5 +1,4 @@
 import { ZodError, ZodTypeDef, z } from 'zod'
-import superjson from 'superjson'
 import { Result, Err, Ok } from 'ts-results'
 import { CronJob } from 'cron'
 
@@ -10,9 +9,6 @@ export * from './run'
 export * from './logger'
 export * from './status'
 
-export async function sleep(ms: number): Promise<void> {
-  await new Promise((r) => setTimeout(r, ms))
-}
 
 export async function safe<T, E = Error>(
   promise: Promise<T>
@@ -37,12 +33,6 @@ export function parseData<I, O>(
   return Ok(parsed.data)
 }
 
-export function parseJSON<I, O>(
-  jsonString: string,
-  schema: z.Schema<O, ZodTypeDef, I>
-): Result<O, ZodError<I>> {
-  return parseData(superjson.parse(jsonString), schema)
-}
 
 export function now() {
   return Math.floor(Date.now() / 1000)

@@ -1,24 +1,23 @@
 {
-  // "exclude": ["./src/services/permission-key/712"],
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2020",
-    "lib": [
-      "es2020"
+    "target": "ES2021",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "types": [
+      "bun-types"
     ],
-    "baseUrl": ".",
-    "outDir": "dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": "./src",
+    "outDir": "build",
     "paths": {
       "@/*": [
-        "./src/*"
-      ]
+        "*"
+      ],
     },
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "strict": true,
     "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
