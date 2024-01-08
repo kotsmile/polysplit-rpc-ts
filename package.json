@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "postinstall": "prisma generate && prettier --write ./src/services/db/zod/*",
-    "dev": "tsup --watch --onSuccess \"yarn serve\"",
+    "dev": "bun run --watch ./src/index.ts",
     "build": "yarn lint && yarn type && tsup",
     "serve": "yarn gen-doc && node dist/index.js",
     "serve:db": "yarn gen-doc && yarn prisma:apply-migration && node dist/index.js",
@@ -18,18 +18,21 @@
     "@total-typescript/ts-reset": "^0.5.1",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
+    "bun-types": "latest",
     "eslint": "^8.46.0",
     "prettier": "^2.8.8",
     "prisma": "^4.16.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6",
-    "zod-prisma": "^0.5.4",
-    "bun-types": "latest"
+    "zod-prisma": "^0.5.4"
   },
   "dependencies": {
     "@prisma/client": "^4.16.2",
     "axios": "^1.4.0",
+    "cron": "^3.1.6",
+    "elysia": "^0.8.8",
     "ethers": "^6.9.2",
+    "redis": "^4.6.12",
     "ts-results": "^3.3.0",
     "tslog": "^4.8.2",
     "zennv": "^0.1.1",

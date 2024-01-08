@@ -1,7 +1,7 @@
 import zennv from 'zennv'
 import { z } from 'zod'
 
-export default zennv({
+export const env = zennv({
   dotenv: true,
   schema: z.object({
     ENV: z.enum(['development', 'production']).default('development'),

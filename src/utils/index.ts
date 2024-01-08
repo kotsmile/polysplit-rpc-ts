@@ -7,8 +7,6 @@ import { logger } from './logger'
 export * from './misc'
 export * from './run'
 export * from './logger'
-export * from './status'
-
 
 export async function safe<T, E = Error>(
   promise: Promise<T>
@@ -32,7 +30,6 @@ export function parseData<I, O>(
 
   return Ok(parsed.data)
 }
-
 
 export function now() {
   return Math.floor(Date.now() / 1000)
@@ -59,9 +56,9 @@ export function createAndRunCronJob(
   cronTime: string,
   executer: () => Promise<boolean>
 ): void {
-  new CronJob({
+  new CronJob(
     cronTime,
-    async onTick() {
+    async () => {
       try {
         const response = await executer()
         if (!response) {
@@ -71,6 +68,7 @@ export function createAndRunCronJob(
         logger.error('Problem to execute cron job', error)
       }
     },
-    start: true,
-  })
+    undefined,
+    true
+  )
 }
