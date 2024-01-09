@@ -28,11 +28,3 @@ export async function getChainsWithRpcs(): Promise<
     message: `failed to request database: ${err.message}`,
   }))
 }
-
-export async function getRpcs(): Promise<Result<Rpc[], DbError>> {
-  const response = await safe(prisma.rpc.findMany())
-  return response.mapErr((err) => ({
-    type: 'internal',
-    message: `failed to request database: ${err.message}`,
-  }))
-}
