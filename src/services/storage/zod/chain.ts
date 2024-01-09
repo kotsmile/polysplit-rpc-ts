@@ -1,8 +1,11 @@
 import * as z from 'zod'
+import { ChainType, ChainEnvType } from '@prisma/client'
 import { CompleteRpc, RelatedRpcModel } from './index'
 
 export const ChainModel = z.object({
   id: z.string(),
+  type: z.nativeEnum(ChainType),
+  env_type: z.nativeEnum(ChainEnvType),
   created_at: z.date(),
   updated_at: z.date(),
 })

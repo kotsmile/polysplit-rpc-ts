@@ -1,11 +1,7 @@
 import { ZodError, ZodTypeDef, z } from 'zod'
 import { Result, Err, Ok } from 'ts-results'
-import { CronJob } from 'cron'
-
-import { logger } from './logger'
 
 export * from './misc'
-export * from './run'
 export * from './logger'
 
 export async function safe<T, E = Error>(
@@ -48,27 +44,4 @@ export async function timePromise<T>(
   const val = await promise
   const end = Date.now()
   return [val, end - start]
-}
-
-export type ResultResponse<T> = Result<T, { code: number; error: string }>
-
-export function createAndRunCronJob(
-  cronTime: string,
-  executer: () => Promise<boolean>
-): void {
-  new CronJob(
-    cronTime,
-    async () => {
-      try {
-        const response = await executer()
-        if (!response) {
-          logger.error('Problem to execute cron job')
-        }
-      } catch (error) {
-        logger.error('Problem to execute cron job', error)
-      }
-    },
-    undefined,
-    true
-  )
 }

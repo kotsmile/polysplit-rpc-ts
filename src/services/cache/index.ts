@@ -7,11 +7,11 @@ export async function setRpcs(
   chainId: string,
   rpc: string[]
 ): Promise<Result<boolean, string>> {
-  return Ok(cache.set(chainId, rpc))
+  return Ok(cache.set(`chainId.${chainId}`, rpc))
 }
 
 export async function getRpcs(
   chainId: string
 ): Promise<Result<string[] | undefined, string>> {
-  return Ok(cache.get(chainId))
+  return Ok(cache.get(`chainId.${chainId}`))
 }

@@ -21,6 +21,7 @@ export async function getChainsWithRpcs(): Promise<
       include: {
         rpcs: true,
       },
+      // where: { id: '1' },
     })
   )
   return response.mapErr((err) => ({

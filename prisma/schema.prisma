@@ -9,7 +9,7 @@ generator client {
 
 generator zod {
   provider = "zod-prisma"
-  output   = "../src/services/db/zod"
+  output   = "../src/services/storage/zod"
 }
 
 enum ChainType {
@@ -55,7 +55,7 @@ model Rpc {
   chain_id String
 
   type RpcType
-  url  String
+  url  String  @unique
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

@@ -15,6 +15,7 @@ app.post('/v1/chain/:id', async ({ body, params }) => {
       logger.error(`failed to request RPC ${url}: ${response.val.message}`)
       continue
     }
+    logger.info(`Used for ${params.id}: ${url}`)
     return response.val
   }
 

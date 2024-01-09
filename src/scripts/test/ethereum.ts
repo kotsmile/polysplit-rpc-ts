@@ -1,9 +1,7 @@
 import { JsonRpcProvider, ZeroAddress, formatEther } from 'ethers'
 
-import { run } from '@/utils'
-
-run('Check connection to ethereum RPC', async () => {
-  const rpc = 'http://localhost:3001/v1/chain/1'
+async function main() {
+  const rpc = 'http://localhost:3001/v1/chain/56'
   // const rpc = 'https://eth.llamarpc.com'
   const provider = new JsonRpcProvider(rpc)
 
@@ -15,4 +13,8 @@ run('Check connection to ethereum RPC', async () => {
 
   const balance = await provider.getBalance(ZeroAddress)
   console.log(formatEther(balance))
-})
+}
+
+if (import.meta.main) {
+  await main()
+}

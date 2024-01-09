@@ -10,3 +10,5 @@ swagger
 .env
 services.json
 users.json
+chainlist-chains
+src/extraRpcs.ts
