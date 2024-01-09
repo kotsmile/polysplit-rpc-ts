@@ -1,20 +1,23 @@
-import axios from 'axios'
-
-import { app } from '@/app'
-import { logger, safe } from '@/utils'
 import { InternalServerError } from 'elysia'
 
-app.post('/v1/chain/:id', async ({ body }) => {
-  const rpc = 'https://eth.llamarpc.com'
+import { app } from '@/app'
+import { proxyRpcRequest } from '@/services/blockchain'
 
-  console.log('Request body', body)
-  const response = await safe(axios.post(rpc, body))
-  if (response.err) {
-    logger.error(`failed to request RPC ${rpc}: ${response.val.message}`)
-    throw new InternalServerError('Failed to request RPC')
+import { logger } from '@/utils'
+import { getRpcs } from '@/services/cache'
+
+app.post('/v1/chain/:id', async ({ body, params }) => {
+  const rpcs = await getRpcs(params.id)
+
+  for (const url of rpcs) {
+    const response = await proxyRpcRequest(url, body)
+    if (response.err) {
+      logger.error(`failed to request RPC ${url}: ${response.val.message}`)
+      continue
+    }
+    return response.val
   }
 
-  console.log('Response', response.val.data)
-
-  return response.val.data
+  logger.error(`failed to request all RPCs`)
+  throw new InternalServerError('Failed to request RPC')
 })
