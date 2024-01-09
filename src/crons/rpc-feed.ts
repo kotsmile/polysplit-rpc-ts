@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import axios from 'axios'
-import type { Rpc } from '@prisma/client'
 
 import { getChainsWithRpcs } from '@/services/storage'
 import { setRpcs } from '@/services/cache'
