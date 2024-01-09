@@ -22,10 +22,10 @@ enum ChainEnvType {
 }
 
 model Chain {
-  id String @id @unique
+  id       String       @id @unique
   // name      String
-  // type      ChainType
-  // env_type  ChainEnvType
+  type     ChainType
+  env_type ChainEnvType
   // image_url String       @default("https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg")
   //
   // native_currency_name     String
@@ -56,10 +56,6 @@ model Rpc {
 
   type RpcType
   url  String
-
-  height        Int
-  response_time Int
-  status        RpcStatus
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

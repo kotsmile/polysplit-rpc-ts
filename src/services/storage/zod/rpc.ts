@@ -1,5 +1,5 @@
 import * as z from 'zod'
-import { RpcType, RpcStatus } from '@prisma/client'
+import { RpcType } from '@prisma/client'
 import { CompleteChain, RelatedChainModel } from './index'
 
 export const RpcModel = z.object({
@@ -7,9 +7,6 @@ export const RpcModel = z.object({
   chain_id: z.string(),
   type: z.nativeEnum(RpcType),
   url: z.string(),
-  height: z.number().int(),
-  response_time: z.number().int(),
-  status: z.nativeEnum(RpcStatus),
   created_at: z.date(),
   updated_at: z.date(),
 })

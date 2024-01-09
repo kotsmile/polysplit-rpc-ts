@@ -10,5 +10,8 @@ export const env = zennv({
 
     RESPONSE_TIMEOUT_MS: z.string().default('3000').transform(Number),
     RESPONSE_MAX_RETRIES: z.string().default('3').transform(Number),
+    RESPONSE_AMOUNT: z.string().default('5').transform(Number),
+
+    RPC_FEED_CRON: z.string().default('*/5'),
   }),
 })
