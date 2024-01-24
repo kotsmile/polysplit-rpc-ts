@@ -10,6 +10,8 @@ export const env = z
     RESPONSE_MAX_RETRIES: z.string().default('1').transform(Number),
     RESPONSE_AMOUNT: z.string().default('1').transform(Number),
 
-    RPC_FEED_CRON: z.string().default('*/15'),
+    RPC_FEED_CRON: z.string().default('*/1'),
+
+    PROXYSELLER_API_KEY: z.string(),
   })
   .parse(Bun.env)

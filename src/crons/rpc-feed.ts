@@ -1,39 +1,32 @@
 import { z } from 'zod'
 import axios from 'axios'
 
-import { getChainsWithRpcs } from '@/services/storage'
 import { setRpcs } from '@/services/cache'
 
 import { env } from '@/env'
-import { logger, safe, timePromise } from '@/utils'
+import { logger, randomElement, safe, timePromise } from '@/utils'
+import { getChainsWithRpcs } from '@/services/localStorage'
+import { getProxies } from '@/services/proxy'
 
 const axiosTimeout = axios.create({ timeout: env.RESPONSE_TIMEOUT_MS })
 
 export async function rpcFeedCron() {
   logger.info('Collecting RPC Feed')
-  const chains = await getChainsWithRpcs()
-  if (chains.err) {
-    logger.error(`Failed to get chains: ${chains.val.message}`)
-    return
-  }
+  const chains = getChainsWithRpcs()
 
   const BATCH_SIZE = 10
-  for (let i = 0; i < chains.val.length - BATCH_SIZE; i += BATCH_SIZE) {
+  for (let i = 0; i < chains.length - BATCH_SIZE; i += BATCH_SIZE) {
     await Promise.all(
-      chains.val.slice(i, i + BATCH_SIZE).map(async (chain) => {
-        if (chain.type !== 'EVM') {
-          logger.error(`Not supported chain.type ${chain.type}`)
-          return
-        }
+      chains.slice(i, i + BATCH_SIZE).map(async (chain) => {
         if (chain.rpcs.length === 0) {
-          logger.warn(`Skip ${chain.id} zero length rpcs`)
+          logger.warn(`Skip ${chain.chainId} zero length rpcs`)
           return
         }
 
         const metrics = await Promise.all(
           chain.rpcs.map(async (rpc) => ({
-            metrics: await checkEvmRpc(rpc.chain_id, rpc),
-            ...rpc,
+            metrics: await checkEvmRpc(chain.chainId, rpc),
+            rpc,
           }))
         )
 
@@ -44,19 +37,19 @@ export async function rpcFeedCron() {
           )
 
         if (sortedOkMetrics.length === 0) {
-          logger.warn(`Bad rpc chainId: ${chain.id}`)
+          logger.warn(`Bad rpc chainId: ${chain.chainId}, ${chain.name}`)
           return
         }
 
-        const topRpcs = sortedOkMetrics.map((r) => r.url)
-        const response = await setRpcs(chain.id, topRpcs)
+        const topRpcs = sortedOkMetrics.map((r) => r.rpc)
+        const response = await setRpcs(chain.chainId, topRpcs)
         if (response.err) {
           logger.error(`Failed to store top rpcs: ${response.val}`)
           return
         }
 
         logger.debug(
-          `ChainId: ${chain.id}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime}`
+          `ChainId: ${chain.chainId}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime}`
         )
       })
     )
@@ -70,7 +63,7 @@ type RpcMetrics = {
   errorMessage: string
 }
 
-async function checkEvmRpc(chainId: string, rpc: Rpc): Promise<RpcMetrics> {
+async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
   const eth_chainIdRequest = {
     method: 'eth_chainId',
     params: [],
@@ -85,12 +78,18 @@ async function checkEvmRpc(chainId: string, rpc: Rpc): Promise<RpcMetrics> {
 
   let totalTime = 0
   let failed = 0
-  logger.info(rpc.url)
+  const proxies = (await getProxies()).unwrapOr([])
+
   for (let i = 0; i < env.RESPONSE_AMOUNT; i++) {
     const [response, t] = await timePromise(
-      safe(axiosTimeout.post(rpc.url, eth_chainIdRequest))
+      safe(
+        axiosTimeout.post(url, eth_chainIdRequest, {
+          proxy: randomElement(proxies).unwrapOr(undefined),
+        })
+      )
     )
     if (response.err) {
+      logger.error(response.val, url)
       failed++
       continue
     }

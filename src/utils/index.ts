@@ -1,17 +1,21 @@
 import { ZodError, ZodTypeDef, z } from 'zod'
-import { Result, Err, Ok } from 'ts-results'
+import { Result, Err, Ok, Option, None, Some } from 'ts-results'
 
 export * from './misc'
 export * from './logger'
 
-export async function safe<T, E = Error>(
-  promise: Promise<T>
-): Promise<Result<T, E>> {
+export async function safe<T>(promise: Promise<T>): Promise<Result<T, string>> {
   try {
     const data = await promise
     return Ok(data)
   } catch (error: unknown) {
-    return Err(error as E)
+    if (typeof error === 'string') {
+      return Err(error)
+    } else if (error instanceof Error) {
+      return Err(`${error.name}: ${error.message}`)
+    } else {
+      return Err(JSON.stringify(error))
+    }
   }
 }
 
@@ -44,4 +48,12 @@ export async function timePromise<T>(
   const val = await promise
   const end = Date.now()
   return [val, end - start]
+}
+
+export function randomElement<T>(arr: T[]): Option<T> {
+  if (arr.length === 0) return None
+
+  const range = arr.length
+  const index = Math.floor(Math.random() * (range - 1))
+  return Some(arr[index]!)
 }
