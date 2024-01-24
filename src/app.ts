@@ -4,7 +4,7 @@ import { cron } from '@elysiajs/cron'
 import { env } from '@/env'
 
 import { rpcFeedCron } from '@/crons/rpc-feed'
-import { proxyCheckCron } from './crons/proxy-check'
+import { proxyCheckCron } from '@/crons/proxy-check'
 // import { fetchProxies } from './services/proxy'
 // import { setProxies, setRpcs } from './services/cache'
 // import { getChainConfig } from './services/localStorage'
