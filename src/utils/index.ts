@@ -19,6 +19,23 @@ export async function safe<T>(promise: Promise<T>): Promise<Result<T, string>> {
   }
 }
 
+export async function safeWithError<T>(
+  promise: Promise<T>
+): Promise<Result<T, string>> {
+  try {
+    const data = await promise
+    return Ok(data)
+  } catch (error: unknown) {
+    if (typeof error === 'string') {
+      return Err(error)
+    } else if (error instanceof Error) {
+      return Err(`${error.name}: ${error.message}`)
+    } else {
+      return Err(JSON.stringify(error))
+    }
+  }
+}
+
 export function parseData<I, O>(
   data: unknown,
   schema: z.Schema<O, ZodTypeDef, I>

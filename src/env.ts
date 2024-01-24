@@ -12,6 +12,11 @@ export const env = z
 
     RPC_FEED_CRON: z.string().default('*/1'),
 
+    SUPPORTED_CHAIN_IDS: z
+      .string()
+      .default('1,56')
+      .transform((v) => v.split(',')),
+
     PROXYSELLER_API_KEY: z.string(),
   })
   .parse(Bun.env)

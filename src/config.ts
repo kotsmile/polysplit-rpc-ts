@@ -1,3 +1,4 @@
 export const config = {
-  supportedChains: ['1', '56'],
+  supportedChainIds: ['1', '56'],
+  checkChainBatchSize: 1,
 }

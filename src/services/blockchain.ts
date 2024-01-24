@@ -1,10 +1,9 @@
 import { Err, Ok, Result } from 'ts-results'
 import axios, { AxiosHeaders } from 'axios'
 
-import { ProxyConfig } from './localStorage'
-
 import { env } from '@/env'
 import { safe } from '@/utils'
+import { ProxyConfig } from './proxy'
 
 export type BlockchainErrorType = 'timeout' | 'internal'
 export type BlockchainError = {

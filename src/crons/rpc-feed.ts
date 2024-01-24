@@ -2,59 +2,55 @@ import { z } from 'zod'
 import axios from 'axios'
 
 import { setRpcs } from '@/services/cache'
+import { getChainConfig } from '@/services/localStorage'
+import { getProxies } from '@/services/proxy'
 
 import { env } from '@/env'
 import { logger, randomElement, safe, timePromise } from '@/utils'
-import { getChainsWithRpcs } from '@/services/localStorage'
-import { getProxies } from '@/services/proxy'
 
 const axiosTimeout = axios.create({ timeout: env.RESPONSE_TIMEOUT_MS })
 
 export async function rpcFeedCron() {
   logger.info('Collecting RPC Feed')
-  const chains = getChainsWithRpcs()
 
-  const BATCH_SIZE = 10
-  for (let i = 0; i < chains.length - BATCH_SIZE; i += BATCH_SIZE) {
-    await Promise.all(
-      chains.slice(i, i + BATCH_SIZE).map(async (chain) => {
-        if (chain.rpcs.length === 0) {
-          logger.warn(`Skip ${chain.chainId} zero length rpcs`)
-          return
-        }
+  for (const chainId of env.SUPPORTED_CHAIN_IDS) {
+    const chain = getChainConfig(chainId).expect(
+      `failed to fetch chainId for ${chainId}`
+    )
 
-        const metrics = await Promise.all(
-          chain.rpcs.map(async (rpc) => ({
-            metrics: await checkEvmRpc(chain.chainId, rpc),
-            rpc,
-          }))
-        )
+    if (chain.rpcs.length === 0) {
+      logger.warn(`Skip ${chain.chainId} zero length rpcs`)
+      return
+    }
 
-        const sortedOkMetrics = metrics
-          .filter((rpc) => rpc.metrics.status === 'ok')
-          .toSorted(
-            (r1, r2) => r1.metrics.responseTime - r2.metrics.responseTime
-          )
-
-        if (sortedOkMetrics.length === 0) {
-          logger.warn(`Bad rpc chainId: ${chain.chainId}, ${chain.name}`)
-          return
-        }
-
-        const topRpcs = sortedOkMetrics.map((r) => r.rpc)
-        const response = await setRpcs(chain.chainId, topRpcs)
-        if (response.err) {
-          logger.error(`Failed to store top rpcs: ${response.val}`)
-          return
-        }
-
-        logger.debug(
-          `ChainId: ${chain.chainId}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime}`
-        )
+    const metrics: { rpc: string; metrics: RpcMetrics }[] = []
+    for (const rpc of chain.rpcs) {
+      metrics.push({
+        rpc,
+        metrics: await checkEvmRpc(chain.chainId, rpc),
       })
+    }
+
+    const sortedOkMetrics = metrics
+      .filter((rpc) => rpc.metrics.status === 'ok')
+      .toSorted((r1, r2) => r1.metrics.responseTime - r2.metrics.responseTime)
+
+    if (sortedOkMetrics.length === 0) {
+      logger.warn(`Bad rpc chainId: ${chain.chainId}, ${chain.name}`)
+      return
+    }
+
+    const topRpcs = sortedOkMetrics.map((r) => r.rpc)
+    const response = await setRpcs(chain.chainId, topRpcs)
+    if (response.err) {
+      logger.error(`Failed to store top rpcs: ${response.val}`)
+      return
+    }
+
+    logger.debug(
+      `ChainId: ${chain.chainId}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime}`
     )
   }
-  return
 }
 
 type RpcMetrics = {
