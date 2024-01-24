@@ -19,20 +19,14 @@ export async function safe<T>(promise: Promise<T>): Promise<Result<T, string>> {
   }
 }
 
-export async function safeWithError<T>(
+export async function safeWithError<T, E = Error>(
   promise: Promise<T>
-): Promise<Result<T, string>> {
+): Promise<Result<T, E>> {
   try {
     const data = await promise
     return Ok(data)
   } catch (error: unknown) {
-    if (typeof error === 'string') {
-      return Err(error)
-    } else if (error instanceof Error) {
-      return Err(`${error.name}: ${error.message}`)
-    } else {
-      return Err(JSON.stringify(error))
-    }
+    return Err(error as E)
   }
 }
 

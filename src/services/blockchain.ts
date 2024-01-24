@@ -1,9 +1,10 @@
 import { Err, Ok, Result } from 'ts-results'
 import axios, { AxiosHeaders } from 'axios'
 
-import { env } from '@/env'
-import { safe } from '@/utils'
 import { ProxyConfig } from './proxy'
+
+import { env } from '@/env'
+import { safeWithError } from '@/utils'
 
 export type BlockchainErrorType = 'timeout' | 'internal'
 export type BlockchainError = {
@@ -19,7 +20,7 @@ export async function proxyRpcRequest(
   headers?: AxiosHeaders,
   proxy?: ProxyConfig
 ): Promise<Result<unknown, BlockchainError>> {
-  const response = await safe(
+  const response = await safeWithError(
     axiosTimeout.post(url, body, {
       headers,
       proxy,

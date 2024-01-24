@@ -9,8 +9,7 @@ export type ChainConfig = {
 
 export function getChainConfig(chainId: string): Option<ChainConfig> {
   const chainConfig = chains.filter((c) => c.chainId === chainId)[0]
-
-  if (chainConfig !== undefined) {
+  if (chainConfig === undefined) {
     return None
   }
 

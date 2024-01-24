@@ -1,16 +1,21 @@
-import { InternalServerError } from 'elysia'
+import { InternalServerError, NotFoundError } from 'elysia'
 
 import { app } from '@/app'
 import { proxyRpcRequest } from '@/services/blockchain'
 
+import { getProxies, getRpcs } from '@/services/cache'
+
 import { logger, randomElement } from '@/utils'
-import { getRpcs } from '@/services/cache'
-import { getProxies } from '@/services/proxy'
+import { env } from '@/env'
 
 app.post('/v1/chain/:id', async ({ body, params }) => {
+  if (!env.SUPPORTED_CHAIN_IDS.includes(params.id)) {
+    throw new NotFoundError('Unsupported chainId')
+  }
+
   const rpcs = await getRpcs(params.id)
   const randomProxy = (await getProxies())
-    .map(randomElement)
+    .andThen((v) => randomElement(v).toResult(''))
     .unwrapOr(undefined)
 
   for (const url of rpcs) {
@@ -19,6 +24,7 @@ app.post('/v1/chain/:id', async ({ body, params }) => {
       logger.error(`failed to request RPC ${url}: ${response.val.message}`)
       continue
     }
+    logger.debug(`Success: chainId ${params.id} with rpc: ${url}`)
     return response.val
   }
 

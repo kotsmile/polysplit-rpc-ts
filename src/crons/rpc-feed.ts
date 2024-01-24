@@ -1,9 +1,8 @@
 import { z } from 'zod'
 import axios from 'axios'
 
-import { setRpcs } from '@/services/cache'
+import { getProxies, setRpcs } from '@/services/cache'
 import { getChainConfig } from '@/services/localStorage'
-import { getProxies } from '@/services/proxy'
 
 import { env } from '@/env'
 import { logger, randomElement, safe, timePromise } from '@/utils'

@@ -11,6 +11,7 @@ export const env = z
     RESPONSE_AMOUNT: z.string().default('1').transform(Number),
 
     RPC_FEED_CRON: z.string().default('*/1'),
+    PROXY_CHECK_CRON: z.string().default('*/30'),
 
     SUPPORTED_CHAIN_IDS: z
       .string()

@@ -19,12 +19,12 @@ const proxySellerClient = axios.create({
 })
 
 export const GetProxiesResponseSchema = z.object({
-  status: z.literal('success'),
+  status: z.string(),
   data: z.object({
     items: z.array(
       z.object({
-        id: z.number(),
-        order_id: z.number(),
+        id: z.string(),
+        order_id: z.string(),
         ip: z.string(),
         protocol: z.enum(['HTTP']),
         port_http: z.number(),
@@ -33,15 +33,61 @@ export const GetProxiesResponseSchema = z.object({
         password: z.string(),
         auth_ip: z.string(),
         country: z.string(),
-        status: z.enum(['ACTIVE']),
-        rotation: z.string(),
-        link_reboot: z.string(),
+        status: z.enum(['Active']),
       })
     ),
   }),
 })
 
-export async function getProxies(): Promise<Result<ProxyConfig[], string>> {
+export const CheckProxyResponseSchema = z.object({
+  status: z.string(),
+  data: z.object({
+    // "ip": "127.0.0.1",
+    // "port": 8080,
+    // "user": "auth_user",
+    // "password": "auth_password",
+    // "valid": true,
+    // "protocol": "HTTP",
+    // "time": 1234
+    valid: z.boolean(),
+    time: z.number(),
+  }),
+})
+
+export async function checkProxy(
+  proxy: ProxyConfig
+): Promise<Result<number, string>> {
+  const response = await safe(
+    proxySellerClient.get('/tools/proxy/check', {
+      params: {
+        proxy: `${proxy.auth.username}:${proxy.auth.password}@${proxy.host}:${proxy.port}`,
+      },
+    })
+  )
+  if (response.err) {
+    return Err(`failed to check proxy: ${response.val}`)
+  }
+
+  const parsedResponse = CheckProxyResponseSchema.safeParse(response.val.data)
+  if (!parsedResponse.success) {
+    return Err(
+      `failed to parse check proxy response: ${parsedResponse.error.toString()}`
+    )
+  }
+
+  if (
+    parsedResponse.data.status !== 'success' ||
+    !parsedResponse.data.data.valid
+  ) {
+    return Err(`bad proxy`)
+  }
+
+  return Ok(parsedResponse.data.data.time)
+}
+
+export async function fetchProxies(
+  withoutCheck = false
+): Promise<Result<ProxyConfig[], string>> {
   const response = await safe(
     proxySellerClient.get('/proxy/list/mix', {
       params: {
@@ -59,17 +105,33 @@ export async function getProxies(): Promise<Result<ProxyConfig[], string>> {
     return Err(`failed to parse response: ${parsedResponse.error}`)
   }
 
-  return Ok(
-    parsedResponse.data.data.items.map(
-      (d): ProxyConfig => ({
-        protocol: 'http',
-        host: d.ip,
-        port: d.port_http,
-        auth: {
-          username: d.login,
-          password: d.password,
-        },
-      })
-    )
+  const result = parsedResponse.data.data.items.map(
+    (d): ProxyConfig => ({
+      protocol: 'http',
+      host: d.ip,
+      port: d.port_http,
+      auth: {
+        username: d.login,
+        password: d.password,
+      },
+    })
   )
+  if (withoutCheck) {
+    return Ok(result)
+  }
+
+  const newResult: ProxyConfig[] = []
+  for (const proxy of result) {
+    const checkProxyResult = await checkProxy(proxy)
+    if (
+      checkProxyResult.err ||
+      checkProxyResult.val > env.RESPONSE_TIMEOUT_MS
+    ) {
+      continue
+    }
+
+    newResult.push(proxy)
+  }
+
+  return Ok(newResult)
 }
