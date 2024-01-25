@@ -1,9 +1,10 @@
 import { app } from '@/app'
+import { t } from 'elysia'
 
 app.get(
   '/health',
   async () => {
-    // return { user: (await users.getUsers()).unwrap() }
-  }
-  // { response: t.String() }
+    return 'Healthy'
+  },
+  { body: t.String() }
 )

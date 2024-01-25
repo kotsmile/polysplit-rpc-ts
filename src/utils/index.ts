@@ -45,6 +45,9 @@ export function parseData<I, O>(
 export function now() {
   return Math.floor(Date.now() / 1000)
 }
+export function nowMs() {
+  return Date.now()
+}
 
 export function* keyOf<K extends string, V>(obj: Record<K, V>): Generator<K> {
   for (const el of Object.keys(obj)) {
@@ -67,4 +70,18 @@ export function randomElement<T>(arr: T[]): Option<T> {
   const range = arr.length
   const index = Math.floor(Math.random() * (range - 1))
   return Some(arr[index]!)
+}
+
+interface Timer {
+  start: number
+}
+
+export function startTimer(): Timer {
+  return {
+    start: nowMs(),
+  }
+}
+
+export function endTimer(timer: Timer): number {
+  return nowMs() - timer.start
 }

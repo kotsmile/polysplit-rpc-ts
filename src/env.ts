@@ -18,6 +18,10 @@ export const env = z
       .default('1,56')
       .transform((v) => v.split(',')),
 
+    MONGO_DB_URL: z.string(),
+    MONGO_DB_NAME: z.string(),
+    MONGO_DB_STATS_COLLECTION: z.string(),
+
     PROXYSELLER_API_KEY: z.string(),
   })
   .parse(Bun.env)

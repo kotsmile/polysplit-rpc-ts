@@ -6,10 +6,8 @@
     "dev": "bun run --watch ./src/index.ts",
     "build": "bun run lint && bun run ./build.ts",
     "serve": "bun run dist/index.js",
-    "lint": "prettier --check ./src/**/* && eslint ./src",
-    "format": "prettier --write ./src/**/*",
-    "prisma:create-migration": "bunx prisma migrate dev --create-only",
-    "prisma:apply-migration": "bunx prisma migrate deploy"
+    "lint": "prettier --check ./src/**/* ",
+    "format": "prettier --write ./src/**/*"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
@@ -21,6 +19,7 @@
     "axios": "^1.4.0",
     "elysia": "^0.8.8",
     "ethers": "6",
+    "mongodb": "^6.3.0",
     "node-cache": "^5.1.2",
     "ts-results": "^3.3.0",
     "tslog": "^4.8.2",

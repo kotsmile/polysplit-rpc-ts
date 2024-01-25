@@ -5,6 +5,7 @@ import { env } from '@/env'
 
 import { rpcFeedCron } from '@/crons/rpc-feed'
 import { proxyCheckCron } from '@/crons/proxy-check'
+import { mongoClient } from './services/mongodb'
 // import { fetchProxies } from './services/proxy'
 // import { setProxies, setRpcs } from './services/cache'
 // import { getChainConfig } from './services/localStorage'
@@ -43,3 +44,6 @@ export const app = new Elysia()
       },
     })
   )
+  .onStop(async () => {
+    await mongoClient.close()
+  })
