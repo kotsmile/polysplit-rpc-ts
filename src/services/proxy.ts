@@ -23,7 +23,7 @@ export class ProxyService {
   constructor(
     private cache: CacheRepo,
     private proxySellerClient: ProxySellerClient
-  ) { }
+  ) {}
 
   buildHttpAgent(proxy: ProxyConfig) {
     return new HttpsProxyAgent(

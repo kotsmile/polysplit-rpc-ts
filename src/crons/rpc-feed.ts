@@ -1,6 +1,4 @@
 import { z } from 'zod'
-import axios from 'axios'
-import { None } from 'ts-results'
 
 import { proxyService, rpcService } from '@/impl'
 
@@ -77,9 +75,6 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
 
   let totalTime = 0
   let failed = 0
-  const proxy = (await proxyService.nextProxy())
-    .unwrapOr(None)
-    .unwrapOr(undefined)
 
   for (let i = 0; i < env.RESPONSE_AMOUNT; i++) {
     const [response, t] = await timePromise(
