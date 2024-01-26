@@ -1,21 +1,19 @@
-import { setProxies } from '@/services/cache'
-import { fetchProxies } from '@/services/proxy'
+import { proxyService } from '@/impl'
 
-import { logger } from '@/utils'
+import { env } from '@/env'
+import { createAndRunCronJob, logger } from '@/utils'
 
 export async function proxyCheckCron() {
-  logger.info('Updating proxy info')
+  logger.info(`proxy check started`)
 
-  const proxies = await fetchProxies()
-  if (proxies.err) {
-    logger.error('Failed to fetch proxies:', proxies.val)
-    return
-  }
-
-  const response = await setProxies(proxies.val)
+  const response = await proxyService.initProxies()
   if (response.err) {
-    logger.error('Failed to save proxies', proxies.val)
+    logger.error(`failed to init proxies: ${response.val}`)
+    return false
   }
 
-  logger.info('Proxies are saved', proxies.val.length)
+  logger.info('proxy check done')
+  return true
 }
+
+createAndRunCronJob(`${env.PROXY_CHECK_CRON} * * * *`, proxyCheckCron)

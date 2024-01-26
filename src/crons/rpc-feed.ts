@@ -1,11 +1,17 @@
 import { z } from 'zod'
 import axios from 'axios'
+import { Some } from 'ts-results'
 
-import { getProxies, setRpcs } from '@/services/cache'
-import { getChainConfig } from '@/services/localStorage'
+import { proxyService, rpcService } from '@/impl'
 
 import { env } from '@/env'
-import { logger, randomElement, safe, timePromise } from '@/utils'
+import {
+  createAndRunCronJob,
+  logger,
+  randomElement,
+  safe,
+  timePromise,
+} from '@/utils'
 
 const axiosTimeout = axios.create({ timeout: env.RESPONSE_TIMEOUT_MS })
 
@@ -13,17 +19,15 @@ export async function rpcFeedCron() {
   logger.info('Collecting RPC Feed')
 
   for (const chainId of env.SUPPORTED_CHAIN_IDS) {
-    const chain = getChainConfig(chainId).expect(
-      `failed to fetch chainId for ${chainId}`
-    )
+    const chain = rpcService
+      .getChainConfig(chainId)
+      .expect(`failed to fetch chainId for ${chainId}`)
 
-    console.log('1')
     if (chain.rpcs.length === 0) {
       logger.warn(`Skip ${chain.chainId} zero length rpcs`)
-      return
+      return false
     }
 
-    console.log('2')
     const metrics: { rpc: string; metrics: RpcMetrics }[] = []
     for (const rpc of chain.rpcs) {
       metrics.push({
@@ -32,28 +36,27 @@ export async function rpcFeedCron() {
       })
     }
 
-    console.log('3')
     const sortedOkMetrics = metrics
       .filter((rpc) => rpc.metrics.status === 'ok')
-      .toSorted((r1, r2) => r1.metrics.responseTime - r2.metrics.responseTime)
+      .sort((r1, r2) => r1.metrics.responseTime - r2.metrics.responseTime)
 
     if (sortedOkMetrics.length === 0) {
       logger.warn(`Bad rpc chainId: ${chain.chainId}, ${chain.name}`)
-      return
+      return false
     }
 
-    console.log('4')
     const topRpcs = sortedOkMetrics.map((r) => r.rpc)
-    const response = await setRpcs(chain.chainId, topRpcs)
+    const response = await rpcService.setRpcs(chain.chainId, topRpcs)
     if (response.err) {
       logger.error(`Failed to store top rpcs: ${response.val}`)
-      return
+      return false
     }
 
     logger.debug(
       `ChainId: ${chain.chainId}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime}`
     )
   }
+  return true
 }
 
 type RpcMetrics = {
@@ -77,11 +80,11 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
 
   let totalTime = 0
   let failed = 0
-  const proxies = (await getProxies()).unwrapOr([])
+  const proxies = (await proxyService.getProxies())
+    .unwrapOr(Some([]))
+    .unwrapOr([])
 
   for (let i = 0; i < env.RESPONSE_AMOUNT; i++) {
-    console.log('here1')
-    console.log(url)
     const [response, t] = await timePromise(
       safe(
         axiosTimeout.post(url, eth_chainIdRequest, {
@@ -89,7 +92,6 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
         })
       )
     )
-    console.log('here2')
     if (response.err) {
       logger.error(response.val, url)
       failed++
@@ -127,3 +129,5 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
     errorMessage: '',
   }
 }
+
+createAndRunCronJob(`${env.RPC_FEED_CRON} * * * *`, rpcFeedCron)

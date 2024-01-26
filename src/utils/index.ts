@@ -1,5 +1,6 @@
 import { ZodError, ZodTypeDef, z } from 'zod'
 import { Result, Err, Ok, Option, None, Some } from 'ts-results'
+import { CronJob } from 'cron'
 
 export * from './misc'
 export * from './logger'
@@ -84,4 +85,23 @@ export function startTimer(): Timer {
 
 export function endTimer(timer: Timer): number {
   return nowMs() - timer.start
+}
+
+export function createAndRunCronJob(
+  cronTime: string,
+  executer: () => Promise<boolean>
+): void {
+  new CronJob({
+    cronTime,
+    async onTick() {
+      try {
+        const response = await executer()
+        if (!response) {
+          logger.error('Problem to execute cron job')
+        }
+      } catch (error) {
+        logger.error('Problem to execute cron job', error)
+      }
+    },
+  })
 }

@@ -1,7 +1,9 @@
+import zennv from 'zennv'
 import { z } from 'zod'
 
-export const env = z
-  .object({
+export const env = zennv({
+  dotenv: true,
+  schema: z.object({
     PORT: z.string().default('3000'),
 
     RESPONSE_TIMEOUT_MS: z.string().default('5000').transform(Number),
@@ -13,7 +15,7 @@ export const env = z
 
     SUPPORTED_CHAIN_IDS: z
       .string()
-      .default('56')
+      .default('1,56')
       .transform((v) => v.split(',')),
 
     PROXYSELLER_API_KEY: z.string(),
@@ -21,5 +23,5 @@ export const env = z
     MONGO_DB_URL: z.string(),
     MONGO_DB_NAME: z.string(),
     MONGO_DB_STATS_COLLECTION: z.string(),
-  })
-  .parse(Bun.env)
+  }),
+})

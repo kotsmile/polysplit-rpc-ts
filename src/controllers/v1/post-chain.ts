@@ -1,52 +1,70 @@
-import { InternalServerError, NotFoundError } from 'elysia'
+import type { Request, Response } from 'express'
+import { Some } from 'ts-results'
 
-import { app } from '@/app'
-import { proxyRpcRequest } from '@/services/blockchain'
+import { rpcService, proxyService, evmService, statsService } from '@/impl'
 
-import { getProxies, getRpcs } from '@/services/cache'
-
-import { endTimer, logger, now, randomElement, startTimer } from '@/utils'
+import { endTimer, logger, randomElement, startTimer } from '@/utils'
 import { env } from '@/env'
-import { storeStatsRecord } from '@/services/mongodb'
 
-app.post('/v1/chain/:id', async ({ body, params }) => {
+export async function postChainControllerV1(req: Request, res: Response) {
   const start = startTimer()
 
-  if (!env.SUPPORTED_CHAIN_IDS.includes(params.id)) {
-    throw new NotFoundError('Unsupported chainId')
+  const chainId = req.params.chainId ?? '-'
+
+  if (!env.SUPPORTED_CHAIN_IDS.includes(chainId)) {
+    logger.error(`chainId: ${chainId} is not supported`)
+    return res.sendStatus(404)
   }
 
-  const rpcs = await getRpcs(params.id)
-  const randomProxy = (await getProxies())
-    .andThen((v) => randomElement(v).toResult(''))
-    .unwrapOr(undefined)
+  const rpcs = await rpcService.getRpcs(chainId)
+  if (rpcs.err) {
+    logger.error(`faield to get rpcs for chainId: ${chainId}: ${rpcs.val}`)
+    return res.sendStatus(500)
+  }
+
+  if (rpcs.val.none) {
+    logger.error(`no rpcs for chainId: ${chainId}`)
+    return res.sendStatus(500)
+  }
+
+  const proxies_ = await proxyService.getProxies()
+  if (proxies_.err) {
+    logger.error(`failed to fetch proxies: ${proxies_.val}`)
+  }
+
+  const proxies = proxies_.unwrapOr(Some([])).unwrapOr([])
+  const randomProxy = randomElement(proxies).unwrapOr(undefined)
 
   for (const url of rpcs) {
-    const response = await proxyRpcRequest(url, body, undefined, randomProxy)
+    const response = await evmService.proxyRpcRequest(
+      url,
+      req.body,
+      undefined,
+      randomProxy
+    )
     if (response.err) {
       logger.error(`failed to request RPC ${url}: ${response.val.message}`)
       continue
     }
-    logger.debug(`Success: chainId ${params.id} with rpc: ${url}`)
+
+    logger.debug(`success: chainId ${chainId} with rpc: ${url}`)
     const time = endTimer(start)
-    await storeStatsRecord({
-      chainId: params.id,
+    await statsService.storeStats({
+      chainId,
       status: 'ok',
       choosenRpc: url,
       responseTimeMs: time,
-      date: now(),
     })
-    return response.val
+    return res.send(response.val)
   }
 
-  logger.error(`failed to request all RPCs`)
+  logger.error(`failed to request all RPCs for chainId: ${chainId}`)
   const time = endTimer(start)
-  await storeStatsRecord({
-    chainId: params.id,
+  await statsService.storeStats({
+    chainId,
     status: 'error',
     responseTimeMs: time,
-    errorMessage: 'failed to request all RPCs',
-    date: now(),
+    errorMessage: `failed to request all RPCs for chainId: ${chainId}`,
   })
-  throw new InternalServerError('Failed to request RPC')
-})
+  return res.sendStatus(500)
+}
