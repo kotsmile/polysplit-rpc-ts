@@ -107,7 +107,7 @@ export class ProxyService {
   }
 
   async initProxies(): Promise<Result<void, string>> {
-    const proxies = await this.proxySellerClient.fetchProxies(true)
+    const proxies = await this.proxySellerClient.fetchProxies()
     if (proxies.err) {
       return Err(`failed to fetch and check proxies: ${proxies.val}`)
     }

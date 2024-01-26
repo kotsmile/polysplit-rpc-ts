@@ -91,9 +91,7 @@ export class ProxySellerClient {
     return Ok(parsedResponse.data.data.time < this.timeoutMs)
   }
 
-  async fetchProxies(
-    withoutCheck = false
-  ): Promise<Result<ProxyConfig[], string>> {
+  async fetchProxies(): Promise<Result<ProxyConfig[], string>> {
     const result: ProxyConfig[] = []
     for (const order of this.orders) {
       const response = await safe(
@@ -132,20 +130,6 @@ export class ProxySellerClient {
       )
     }
     console.log('proxy list length', result.length)
-    if (withoutCheck) {
-      return Ok(result)
-    }
-
-    const newResult: ProxyConfig[] = []
-    for (const proxy of result) {
-      const checkProxyResult = await this.checkProxy(proxy)
-      if (checkProxyResult.err || !checkProxyResult.val) {
-        continue
-      }
-
-      newResult.push(proxy)
-    }
-
-    return Ok(newResult)
+    return Ok(result)
   }
 }
