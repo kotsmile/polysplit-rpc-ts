@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@elysiajs/cron": "^0.8.0",
-    "axios": "^1.4.0",
+    "axios": "latest",
     "elysia": "^0.8.8",
     "ethers": "6",
     "mongodb": "^6.3.0",

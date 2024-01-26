@@ -1,0 +1,12 @@
+node_modules
+
+dist
+coverage
+
+swagger
+
+.env
+services.json
+users.json
+chainlist-chains
+src/extraRpcs.ts

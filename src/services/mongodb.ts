@@ -6,7 +6,14 @@ import { safe } from '@/utils'
 
 export const mongoClient = new MongoClient(env.MONGO_DB_URL)
 
-export interface StatisticRecord {
+export async function connectMongoDb() {
+  await mongoClient.connect()
+}
+export async function disconnectMongoDb() {
+  await mongoClient.close()
+}
+
+export interface Stats {
   status: 'ok' | 'error'
   chainId: string
   responseTimeMs: number
@@ -15,10 +22,10 @@ export interface StatisticRecord {
   date: number
 }
 
-export async function saveRecord(
-  record: StatisticRecord
+export async function storeStatsRecord(
+  record: Stats
 ): Promise<Result<void, string>> {
-  const result = await safe(getStatisticCollection().insertOne(record))
+  const result = await safe(getStatsCollection().insertOne(record))
   if (result.err) {
     return Err(`Failed to insert into db: ${result.val}`)
   }
@@ -26,8 +33,8 @@ export async function saveRecord(
   return Ok(undefined)
 }
 
-function getStatisticCollection(): Collection<StatisticRecord> {
-  return getMongoDb().collection<StatisticRecord>(env.MONGO_DB_STATS_COLLECTION)
+function getStatsCollection(): Collection<Stats> {
+  return getMongoDb().collection<Stats>(env.MONGO_DB_STATS_COLLECTION)
 }
 
 function getMongoDb(): Db {

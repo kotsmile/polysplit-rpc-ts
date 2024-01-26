@@ -7,7 +7,7 @@ import { getProxies, getRpcs } from '@/services/cache'
 
 import { endTimer, logger, now, randomElement, startTimer } from '@/utils'
 import { env } from '@/env'
-import { saveRecord } from '@/services/mongodb'
+import { storeStatsRecord } from '@/services/mongodb'
 
 app.post('/v1/chain/:id', async ({ body, params }) => {
   const start = startTimer()
@@ -29,11 +29,11 @@ app.post('/v1/chain/:id', async ({ body, params }) => {
     }
     logger.debug(`Success: chainId ${params.id} with rpc: ${url}`)
     const time = endTimer(start)
-    await saveRecord({
+    await storeStatsRecord({
       chainId: params.id,
       status: 'ok',
       choosenRpc: url,
-      responseTime: time,
+      responseTimeMs: time,
       date: now(),
     })
     return response.val
@@ -41,10 +41,10 @@ app.post('/v1/chain/:id', async ({ body, params }) => {
 
   logger.error(`failed to request all RPCs`)
   const time = endTimer(start)
-  await saveRecord({
+  await storeStatsRecord({
     chainId: params.id,
     status: 'error',
-    responseTime: time,
+    responseTimeMs: time,
     errorMessage: 'failed to request all RPCs',
     date: now(),
   })

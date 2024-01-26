@@ -17,11 +17,13 @@ export async function rpcFeedCron() {
       `failed to fetch chainId for ${chainId}`
     )
 
+    console.log('1')
     if (chain.rpcs.length === 0) {
       logger.warn(`Skip ${chain.chainId} zero length rpcs`)
       return
     }
 
+    console.log('2')
     const metrics: { rpc: string; metrics: RpcMetrics }[] = []
     for (const rpc of chain.rpcs) {
       metrics.push({
@@ -30,6 +32,7 @@ export async function rpcFeedCron() {
       })
     }
 
+    console.log('3')
     const sortedOkMetrics = metrics
       .filter((rpc) => rpc.metrics.status === 'ok')
       .toSorted((r1, r2) => r1.metrics.responseTime - r2.metrics.responseTime)
@@ -39,6 +42,7 @@ export async function rpcFeedCron() {
       return
     }
 
+    console.log('4')
     const topRpcs = sortedOkMetrics.map((r) => r.rpc)
     const response = await setRpcs(chain.chainId, topRpcs)
     if (response.err) {
@@ -76,6 +80,8 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
   const proxies = (await getProxies()).unwrapOr([])
 
   for (let i = 0; i < env.RESPONSE_AMOUNT; i++) {
+    console.log('here1')
+    console.log(url)
     const [response, t] = await timePromise(
       safe(
         axiosTimeout.post(url, eth_chainIdRequest, {
@@ -83,6 +89,7 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
         })
       )
     )
+    console.log('here2')
     if (response.err) {
       logger.error(response.val, url)
       failed++

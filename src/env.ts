@@ -2,9 +2,7 @@ import { z } from 'zod'
 
 export const env = z
   .object({
-    ENV: z.enum(['development', 'production']).default('development'),
     PORT: z.string().default('3000'),
-    HOST: z.string().default('http://localhost:3000'),
 
     RESPONSE_TIMEOUT_MS: z.string().default('5000').transform(Number),
     RESPONSE_MAX_RETRIES: z.string().default('1').transform(Number),
@@ -15,13 +13,13 @@ export const env = z
 
     SUPPORTED_CHAIN_IDS: z
       .string()
-      .default('1,56')
+      .default('56')
       .transform((v) => v.split(',')),
+
+    PROXYSELLER_API_KEY: z.string(),
 
     MONGO_DB_URL: z.string(),
     MONGO_DB_NAME: z.string(),
     MONGO_DB_STATS_COLLECTION: z.string(),
-
-    PROXYSELLER_API_KEY: z.string(),
   })
   .parse(Bun.env)

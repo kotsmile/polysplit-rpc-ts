@@ -5,7 +5,7 @@ import { env } from '@/env'
 
 import { rpcFeedCron } from '@/crons/rpc-feed'
 import { proxyCheckCron } from '@/crons/proxy-check'
-import { mongoClient } from './services/mongodb'
+import { connectMongoDb, disconnectMongoDb } from '@/services/mongodb'
 // import { fetchProxies } from './services/proxy'
 // import { setProxies, setRpcs } from './services/cache'
 // import { getChainConfig } from './services/localStorage'
@@ -23,7 +23,8 @@ import { mongoClient } from './services/mongodb'
 // }
 
 // initStart()
-proxyCheckCron().then(() => rpcFeedCron())
+rpcFeedCron()
+// proxyCheckCron().then(() => rpcFeedCron())
 
 export const app = new Elysia()
   .use(
@@ -44,6 +45,9 @@ export const app = new Elysia()
       },
     })
   )
+  .onStart(async () => {
+    await connectMongoDb()
+  })
   .onStop(async () => {
-    await mongoClient.close()
+    await disconnectMongoDb()
   })

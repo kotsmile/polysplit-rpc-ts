@@ -1,6 +1,5 @@
 import { Ok, Result } from 'ts-results'
 import NodeCache from 'node-cache'
-
 import { ProxyConfig } from '../proxy'
 
 const cache = new NodeCache()
