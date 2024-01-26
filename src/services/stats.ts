@@ -18,7 +18,7 @@ export class StatsService {
     private storageDocRepo: StorageDocRepo,
     private dbName: string,
     private collectionName: string
-  ) { }
+  ) {}
 
   async storeStats(stats: Omit<Stats, 'date'>): Promise<Result<void, string>> {
     return (

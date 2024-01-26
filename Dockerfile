@@ -1,4 +1,4 @@
-FROM node:16 as build
+FROM node:18 as build
 
 WORKDIR /app
 COPY . .
@@ -7,6 +7,6 @@ RUN yarn install --frozen-lockfile
 RUN yarn build
 
 FROM build as release
-COPY --from build ./dist/index.js .
+COPY --from=build ./app/dist/index.js .
 
 CMD ["node", "index.js"]

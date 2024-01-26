@@ -12,7 +12,7 @@ export type ChainConfig = {
 export class RpcService {
   RPC_KEY = 'chainId'
 
-  constructor(private cache: CacheRepo) { }
+  constructor(private cache: CacheRepo) {}
 
   getRpcKey(chainId: string): string {
     return `${this.RPC_KEY}.${chainId}`

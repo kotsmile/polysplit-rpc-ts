@@ -19,7 +19,7 @@ export class ProxyService {
   constructor(
     private cache: CacheRepo,
     private proxySellerClient: ProxySellerClient
-  ) { }
+  ) {}
 
   async setProxies(proxies: ProxyConfig[]): Promise<Result<boolean, string>> {
     return await this.cache.setValue(this.PROXY_KEY, proxies)
@@ -36,7 +36,7 @@ export class ProxyService {
     }
 
     const response = await this.setProxies(proxies.val)
-    if (response) {
+    if (response.err) {
       return Err(`failed to save proxies: ${response.val}`)
     }
 

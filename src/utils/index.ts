@@ -1,6 +1,7 @@
 import { ZodError, ZodTypeDef, z } from 'zod'
 import { Result, Err, Ok, Option, None, Some } from 'ts-results'
 import { CronJob } from 'cron'
+import { logger } from './logger'
 
 export * from './misc'
 export * from './logger'
@@ -66,7 +67,9 @@ export async function timePromise<T>(
 }
 
 export function randomElement<T>(arr: T[]): Option<T> {
-  if (arr.length === 0) return None
+  if (arr.length === 0) {
+    return None
+  }
 
   const range = arr.length
   const index = Math.floor(Math.random() * (range - 1))

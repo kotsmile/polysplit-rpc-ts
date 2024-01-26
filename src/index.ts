@@ -4,7 +4,7 @@ import { config } from '@/config'
 import { routing } from '@/routing'
 
 // init crons
-// import { proxyCheckCron } from '@/crons/proxy-check'
+import { proxyCheckCron } from '@/crons/proxy-check'
 import { rpcFeedCron } from '@/crons/rpc-feed'
 
 import { expressApp } from '@/app'
@@ -12,8 +12,7 @@ import { expressApp } from '@/app'
 import { env } from '@/env'
 import { logger } from '@/utils'
 
-// proxyCheckCron().then(() => rpcFeedCron())
-rpcFeedCron()
+proxyCheckCron().then(() => rpcFeedCron())
 
 async function main() {
   const { notFoundHandler } = attachRouting(config, routing)
