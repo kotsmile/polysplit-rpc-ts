@@ -66,14 +66,18 @@ export async function timePromise<T>(
   return [val, end - start]
 }
 
+let i = 0
 export function randomElement<T>(arr: T[]): Option<T> {
   if (arr.length === 0) {
     return None
   }
 
-  const range = arr.length
-  const index = Math.floor(Math.random() * (range - 1))
-  return Some(arr[index]!)
+  // const range = arr.length
+  // const index = Math.floor(Math.random() * (range - 1))
+  //
+  console.log(i)
+  return Some(arr[i++]!)
+  // return Some(arr[index]!)
 }
 
 interface Timer {

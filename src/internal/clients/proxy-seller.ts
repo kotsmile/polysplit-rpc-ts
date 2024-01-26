@@ -9,7 +9,8 @@ import { safe } from '@/utils'
 export const GetProxiesResponseSchema = z.object({
   status: z.string(),
   data: z.object({
-    items: z.array(
+    items: z.record(
+      z.string(),
       z.object({
         id: z.string(),
         order_id: z.string(),
@@ -54,11 +55,13 @@ export class ProxySellerClient {
     })
   }
 
-  async checkProxy(proxy: ProxyConfig): Promise<Result<number, string>> {
+  async checkProxy(proxy: ProxyConfig): Promise<Result<boolean, string>> {
+    const proxyString = `${proxy.auth.username}:${proxy.auth.password}@${proxy.host}:${proxy.port}`
+    // console.log(proxyString)
     const response = await safe(
       this.axiosClient.get('/tools/proxy/check', {
         params: {
-          proxy: `${proxy.auth.username}:${proxy.auth.password}@${proxy.host}:${proxy.port}`,
+          proxy: proxyString,
         },
       })
     )
@@ -80,7 +83,7 @@ export class ProxySellerClient {
       return Err(`bad proxy`)
     }
 
-    return Ok(parsedResponse.data.data.time)
+    return Ok(parsedResponse.data.data.time < this.timeoutMs)
   }
 
   async fetchProxies(
@@ -103,7 +106,7 @@ export class ProxySellerClient {
       return Err(`failed to parse response: ${parsedResponse.error}`)
     }
 
-    const result = parsedResponse.data.data.items.map(
+    const result = Object.values(parsedResponse.data.data.items).map(
       (d): ProxyConfig => ({
         protocol: 'http',
         host: d.ip,
@@ -114,6 +117,7 @@ export class ProxySellerClient {
         },
       })
     )
+    console.log('proxy list length', result.length)
     if (withoutCheck) {
       return Ok(result)
     }
@@ -121,7 +125,7 @@ export class ProxySellerClient {
     const newResult: ProxyConfig[] = []
     for (const proxy of result) {
       const checkProxyResult = await this.checkProxy(proxy)
-      if (checkProxyResult.err || checkProxyResult.val > this.timeoutMs) {
+      if (checkProxyResult.err || !checkProxyResult.val) {
         continue
       }
 

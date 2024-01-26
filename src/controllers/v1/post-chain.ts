@@ -55,6 +55,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
 
   const proxies = proxies_.unwrapOr(Some([])).unwrapOr([])
   const randomProxy = randomElement(proxies).unwrapOr(undefined)
+  logger.debug('pick proxy:', randomProxy)
 
   for (const url of rpcs) {
     const response = await evmService.proxyRpcRequest(

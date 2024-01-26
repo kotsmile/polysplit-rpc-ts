@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import axios from 'axios'
-import { Some } from 'ts-results'
+import { None } from 'ts-results'
 
 import { proxyService, rpcService } from '@/impl'
 
@@ -8,8 +8,7 @@ import { env } from '@/env'
 import {
   createAndRunCronJob,
   logger,
-  randomElement,
-  safe,
+  safeWithError,
   timePromise,
 } from '@/utils'
 
@@ -80,20 +79,32 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
 
   let totalTime = 0
   let failed = 0
-  const proxies = (await proxyService.getProxies())
-    .unwrapOr(Some([]))
-    .unwrapOr([])
+  const proxy = (await proxyService.nextProxy())
+    .unwrapOr(None)
+    .unwrapOr(undefined)
 
   for (let i = 0; i < env.RESPONSE_AMOUNT; i++) {
     const [response, t] = await timePromise(
-      safe(
+      safeWithError(
         axiosTimeout.post(url, eth_chainIdRequest, {
-          proxy: randomElement(proxies).unwrapOr(undefined),
+          proxy,
         })
       )
     )
     if (response.err) {
-      logger.error(response.val, url)
+      if ('code' in response.val) {
+        console.log(response.val.code)
+        if (
+          response.val.code === 'ECONNREFUSED' ||
+          response.val.code === 'EHOSTUNREACH' ||
+          response.val.code === 'ERR_BAD_REQUEST'
+        ) {
+          if (await proxyService.rotateProxy()) {
+            continue
+          }
+        }
+      }
+      logger.error(response.val.message, url)
       failed++
       continue
     }
