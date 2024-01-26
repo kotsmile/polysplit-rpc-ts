@@ -8,10 +8,7 @@ import { logger } from '@/utils'
 export const config = createConfig({
   app: expressApp,
   startupLogo: false,
-  cors: ({ defaultHeaders }) => ({
-    ...defaultHeaders,
-    'Access-Control-Allow-Headers': 'Authorization, Content-Type',
-  }),
+  cors: true,
   server: {
     listen: env.PORT,
   },
