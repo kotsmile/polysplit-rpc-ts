@@ -13,17 +13,38 @@ export async function postChainControllerV1(req: Request, res: Response) {
 
   if (!env.SUPPORTED_CHAIN_IDS.includes(chainId)) {
     logger.error(`chainId: ${chainId} is not supported`)
+    const time = endTimer(start)
+    await statsService.storeStats({
+      chainId,
+      status: 'error',
+      responseTimeMs: time,
+      errorMessage: `chainId: ${chainId} is not supported`,
+    })
     return res.sendStatus(404)
   }
 
   const rpcs = await rpcService.getRpcs(chainId)
   if (rpcs.err) {
     logger.error(`faield to get rpcs for chainId: ${chainId}: ${rpcs.val}`)
+    const time = endTimer(start)
+    await statsService.storeStats({
+      chainId,
+      status: 'error',
+      responseTimeMs: time,
+      errorMessage: `faield to get rpcs for chainId: ${chainId}: ${rpcs.val}`,
+    })
     return res.sendStatus(500)
   }
 
   if (rpcs.val.none) {
     logger.error(`no rpcs for chainId: ${chainId}`)
+    const time = endTimer(start)
+    await statsService.storeStats({
+      chainId,
+      status: 'error',
+      responseTimeMs: time,
+      errorMessage: `no rpcs for chainId: ${chainId}`,
+    })
     return res.sendStatus(500)
   }
 
