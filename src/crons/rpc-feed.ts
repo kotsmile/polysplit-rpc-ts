@@ -12,8 +12,6 @@ import {
   timePromise,
 } from '@/utils'
 
-const axiosTimeout = axios.create({ timeout: env.RESPONSE_TIMEOUT_MS })
-
 export async function rpcFeedCron() {
   logger.info('Collecting RPC Feed')
 
@@ -86,24 +84,14 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
   for (let i = 0; i < env.RESPONSE_AMOUNT; i++) {
     const [response, t] = await timePromise(
       safeWithError(
-        axiosTimeout.post(url, eth_chainIdRequest, {
-          proxy,
-        })
+        proxyService.proxyPostRequest(
+          url,
+          eth_chainIdRequest,
+          env.RESPONSE_TIMEOUT_MS
+        )
       )
     )
     if (response.err) {
-      if ('code' in response.val) {
-        console.log(response.val.code)
-        if (
-          response.val.code === 'ECONNREFUSED' ||
-          response.val.code === 'EHOSTUNREACH' ||
-          response.val.code === 'ERR_BAD_REQUEST'
-        ) {
-          if (await proxyService.rotateProxy()) {
-            continue
-          }
-        }
-      }
       logger.error(response.val.message, url)
       failed++
       continue

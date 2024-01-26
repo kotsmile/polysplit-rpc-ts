@@ -1,7 +1,6 @@
 import { Err, Ok, Result } from 'ts-results'
-import axios, { AxiosHeaders, AxiosInstance } from 'axios'
 
-import type { ProxyConfig } from '@/services/proxy'
+import type { ProxyService } from '@/services/proxy'
 
 import { safeWithError } from '@/utils'
 
@@ -12,23 +11,17 @@ export type EvmError = {
 }
 
 export class EvmService {
-  axiosClient: AxiosInstance
+  constructor(
+    private proxyService: ProxyService,
+    private maxResponseTimeMs: number
+  ) { }
 
-  constructor(maxResponseTimeMs: number) {
-    this.axiosClient = axios.create({ timeout: maxResponseTimeMs })
-  }
-
-  async proxyRpcRequest(
+  async rpcRequest(
     url: string,
-    body: unknown,
-    headers?: AxiosHeaders,
-    proxy?: ProxyConfig
+    body: unknown
   ): Promise<Result<unknown, EvmError>> {
     const response = await safeWithError(
-      this.axiosClient.post(url, body, {
-        headers,
-        proxy,
-      })
+      this.proxyService.proxyPostRequest(url, body, this.maxResponseTimeMs)
     )
 
     if (response.err) {

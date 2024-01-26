@@ -6,25 +6,25 @@ import { ProxyConfig } from '@/services/proxy'
 
 import { safe } from '@/utils'
 
+export const ProxyElementSchema = z.object({
+  id: z.string(),
+  order_id: z.string(),
+  ip: z.string(),
+  protocol: z.enum(['HTTP']),
+  port_http: z.number(),
+  port_socks: z.number(),
+  login: z.string(),
+  password: z.string(),
+  auth_ip: z.string(),
+  country: z.string(),
+  status: z.enum(['Active']),
+})
 export const GetProxiesResponseSchema = z.object({
   status: z.string(),
   data: z.object({
-    items: z.record(
-      z.string(),
-      z.object({
-        id: z.string(),
-        order_id: z.string(),
-        ip: z.string(),
-        protocol: z.enum(['HTTP']),
-        port_http: z.number(),
-        port_socks: z.number(),
-        login: z.string(),
-        password: z.string(),
-        auth_ip: z.string(),
-        country: z.string(),
-        status: z.enum(['Active']),
-      })
-    ),
+    items: z
+      .record(z.string(), ProxyElementSchema)
+      .or(z.array(ProxyElementSchema)),
   }),
 })
 

@@ -3,6 +3,8 @@ import { Err, None, Ok, Option, Result, Some } from 'ts-results'
 import type { ProxySellerClient } from '@/internal/clients/proxy-seller'
 import type { CacheRepo } from '@/internal/repo/cache'
 import { logger } from '@/utils'
+import axios from 'axios'
+import { HttpsProxyAgent } from 'https-proxy-agent'
 
 export type ProxyConfig = {
   protocol: 'http'
@@ -21,7 +23,24 @@ export class ProxyService {
   constructor(
     private cache: CacheRepo,
     private proxySellerClient: ProxySellerClient
-  ) {}
+  ) { }
+
+  buildHttpAgent(proxy: ProxyConfig) {
+    return new HttpsProxyAgent(
+      `${proxy.protocol}.${proxy.auth.username}:${proxy.auth.password}@${proxy.host}:${proxy.port}`
+    )
+  }
+
+  async proxyPostRequest(url: string, body: unknown, timeout?: number) {
+    const proxy = (await this.nextProxy()).unwrapOr(None).unwrapOr(undefined)
+
+    const response = await axios.post(url, body, {
+      httpAgent: proxy ? this.buildHttpAgent(proxy) : undefined,
+      timeout,
+    })
+
+    return response
+  }
 
   async setProxies(proxies: ProxyConfig[]): Promise<Result<boolean, string>> {
     return (await this.cache.setValue(this.PROXY_KEY, proxies)).mapErr(

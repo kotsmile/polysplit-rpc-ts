@@ -1,9 +1,8 @@
 import type { Request, Response } from 'express'
-import { Some } from 'ts-results'
 
-import { rpcService, proxyService, evmService, statsService } from '@/impl'
+import { rpcService, evmService, statsService } from '@/impl'
 
-import { endTimer, logger, randomElement, startTimer } from '@/utils'
+import { endTimer, logger, startTimer } from '@/utils'
 import { env } from '@/env'
 
 export async function postChainControllerV1(req: Request, res: Response) {
@@ -48,22 +47,8 @@ export async function postChainControllerV1(req: Request, res: Response) {
     return res.sendStatus(500)
   }
 
-  const proxies_ = await proxyService.getProxies()
-  if (proxies_.err) {
-    logger.error(`failed to fetch proxies: ${proxies_.val}`)
-  }
-
-  const proxies = proxies_.unwrapOr(Some([])).unwrapOr([])
-  const randomProxy = randomElement(proxies).unwrapOr(undefined)
-  logger.debug('pick proxy:', randomProxy)
-
   for (const url of rpcs) {
-    const response = await evmService.proxyRpcRequest(
-      url,
-      req.body,
-      undefined,
-      randomProxy
-    )
+    const response = await evmService.rpcRequest(url, req.body)
     if (response.err) {
       logger.error(`failed to request RPC ${url}: ${response.val.message}`)
       continue
