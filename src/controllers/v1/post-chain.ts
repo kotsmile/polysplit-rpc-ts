@@ -19,7 +19,9 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       errorMessage: `chainId: ${chainId} is not supported`,
     })
-    return res.sendStatus(404)
+    return res
+      .status(404)
+      .send('If you have problems any visit our site https://polysplit.cloud')
   }
 
   const rpcs = await rpcService.getRpcs(chainId)
@@ -32,7 +34,9 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       errorMessage: `faield to get rpcs for chainId: ${chainId}: ${rpcs.val}`,
     })
-    return res.sendStatus(500)
+    return res
+      .status(505)
+      .send('If you have problems any visit our site https://polysplit.cloud')
   }
 
   if (rpcs.val.none) {
@@ -44,7 +48,9 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       errorMessage: `no rpcs for chainId: ${chainId}`,
     })
-    return res.sendStatus(500)
+    return res
+      .status(500)
+      .send('If you have problems any visit our site https://polysplit.cloud')
   }
 
   for (const url of rpcs) {
@@ -73,5 +79,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
     responseTimeMs: time,
     errorMessage: `failed to request all RPCs for chainId: ${chainId}`,
   })
-  return res.sendStatus(500)
+  return res
+    .status(500)
+    .send('If you have problems any visit our site https://polysplit.cloud')
 }
