@@ -22,6 +22,7 @@ export async function rpcFeedCron() {
       logger.warn(`Skip ${chainId} zero length rpcs`)
       return false
     }
+    logger.info(`rpc length for ${chainId}: ${rpcs.length}`)
 
     const metrics: { rpc: string; metrics: RpcMetrics }[] = []
     for (const rpc of rpcs) {
@@ -117,6 +118,7 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
 
   const responseTime = Math.floor(totalTime / env.RESPONSE_AMOUNT)
 
+  logger.debug(`RPC ${url}: ${responseTime}ms`)
   return {
     status: 'ok',
     responseTime,
