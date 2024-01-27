@@ -1,4 +1,4 @@
-import { Collection, Document, MongoClient } from 'mongodb'
+import { ClientSession, Collection, Document, MongoClient } from 'mongodb'
 import { Err, None, Ok, Option, Result, Some } from 'ts-results'
 
 import { safe } from '@/utils'
@@ -53,10 +53,10 @@ export class StorageRepo {
   }
 
   async withTx<T>(
-    callback: () => Promise<Result<T, string>>
+    callback: (session: ClientSession) => Promise<Result<T, string>>
   ): Promise<Result<T, string>> {
     const session = this.client.startSession()
-    const result = await safe(session.withTransaction(callback))
+    const result = await safe(session.withTransaction(() => callback(session)))
     await session.endSession()
     if (result.err) {
       return Err(`failed to execute transaction: ${result.val}`)
@@ -78,38 +78,50 @@ export class StorageRepo {
     ).map(() => undefined)
   }
 
-  async getTotalRecordsWithIsLandingStats(): Promise<Result<number, string>> {
+  async getTotalRecordsWithIsLandingStats(
+    session?: ClientSession
+  ): Promise<Result<number, string>> {
     return await safe(
-      this.getCollection(StatsCollection).countDocuments({
-        isLanding: true,
-      })
+      this.getCollection(StatsCollection).countDocuments(
+        {
+          isLanding: true,
+        },
+        { session }
+      )
     )
   }
 
-  async getTotalRecordsWithIsLandingLast24HoursStats(): Promise<
-    Result<number, string>
-  > {
+  async getTotalRecordsWithIsLandingLast24HoursStats(
+    session?: ClientSession
+  ): Promise<Result<number, string>> {
     return await safe(
-      this.getCollection(StatsCollection).countDocuments({
-        isLanding: true,
-        date: {
-          $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
+      this.getCollection(StatsCollection).countDocuments(
+        {
+          isLanding: true,
+          date: {
+            $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
+          },
         },
-      })
+        { session }
+      )
     )
   }
 
   async getPopularRpcForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<Option<string>, string>> {
     const response = await safe(
       this.getCollection(StatsCollection)
-        .aggregate([
-          { $match: { chainId } },
-          { $group: { _id: '$choosenRpc', count: { $sum: 1 } } },
-          { $sort: { count: -1 } },
-          { $limit: 1 },
-        ])
+        .aggregate(
+          [
+            { $match: { chainId } },
+            { $group: { _id: '$choosenRpc', count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 1 },
+          ],
+          { session }
+        )
         .tryNext()
     )
     if (response.err) {
@@ -123,10 +135,15 @@ export class StorageRepo {
   }
 
   async getUniqueUsersForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<number, string>> {
     const response = await safe(
-      this.getCollection(StatsCollection).distinct('ip', { chainId })
+      this.getCollection(StatsCollection).distinct(
+        'ip',
+        { chainId },
+        { session }
+      )
     )
     return response
       .map((v) => v.length)
@@ -136,23 +153,27 @@ export class StorageRepo {
   }
 
   async getResponseTimeStatsForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<{ avg: number; max: number; min: number }, string>> {
     const response = await safe(
       this.getCollection(StatsCollection)
-        .aggregate([
-          {
-            $match: { chainId },
-          },
-          {
-            $group: {
-              _id: '$chainId',
-              min: { $min: '$responseTimeMs' },
-              max: { $max: '$responseTimeMs' },
-              avg: { $avg: '$responseTimeMs' },
+        .aggregate(
+          [
+            {
+              $match: { chainId },
             },
-          },
-        ])
+            {
+              $group: {
+                _id: '$chainId',
+                min: { $min: '$responseTimeMs' },
+                max: { $max: '$responseTimeMs' },
+                avg: { $avg: '$responseTimeMs' },
+              },
+            },
+          ],
+          { session }
+        )
         .toArray()
     )
     if (response.err) {
@@ -171,7 +192,8 @@ export class StorageRepo {
   }
 
   async getResponseTimeStatsLast24HoursForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<
     Result<
       {
@@ -185,27 +207,30 @@ export class StorageRepo {
     return (
       await safe(
         this.getCollection(StatsCollection)
-          .aggregate([
-            {
-              $match: {
-                chainId,
-                status: 'ok',
-                date: {
-                  $gte: new Date(
-                    Date.now() - 24 * 60 * 60 * 1000
-                  ).toUTCString(),
+          .aggregate(
+            [
+              {
+                $match: {
+                  chainId,
+                  status: 'ok',
+                  date: {
+                    $gte: new Date(
+                      Date.now() - 24 * 60 * 60 * 1000
+                    ).toUTCString(),
+                  },
                 },
               },
-            },
-            {
-              $group: {
-                _id: null,
-                minResponseTimeMs: { $min: '$responseTimeMs' },
-                maxResponseTimeMs: { $max: '$responseTimeMs' },
-                avgResponseTimeMs: { $avg: '$responseTimeMs' },
+              {
+                $group: {
+                  _id: null,
+                  minResponseTimeMs: { $min: '$responseTimeMs' },
+                  maxResponseTimeMs: { $max: '$responseTimeMs' },
+                  avgResponseTimeMs: { $avg: '$responseTimeMs' },
+                },
               },
-            },
-          ])
+            ],
+            { session }
+          )
           .toArray()
       )
     ).map(
@@ -219,145 +244,181 @@ export class StorageRepo {
   }
 
   async getTopChoosenRpcForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<string[], string>> {
     return (
       await safe(
         this.getCollection(StatsCollection)
-          .aggregate([
-            { $match: { chainId } },
-            { $group: { _id: '$choosenRpc', count: { $sum: 1 } } },
-            { $sort: { count: -1 } },
-            { $limit: 10 },
-          ])
+          .aggregate(
+            [
+              { $match: { chainId } },
+              { $group: { _id: '$choosenRpc', count: { $sum: 1 } } },
+              { $sort: { count: -1 } },
+              { $limit: 10 },
+            ],
+            { session }
+          )
           .toArray()
       )
     ).map((v) => v.map((el) => el._id as string))
   }
 
   async getErrorRecordsCountForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<number, string>> {
     return await safe(
-      this.getCollection(StatsCollection).countDocuments({
-        chainId,
-        status: 'error',
-      })
+      this.getCollection(StatsCollection).countDocuments(
+        {
+          chainId,
+          status: 'error',
+        },
+        { session }
+      )
     )
   }
 
   async getErrorRecordsCountLast24HoursForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<number, string>> {
     return await safe(
-      this.getCollection(StatsCollection).countDocuments({
-        chainId,
-        status: 'error',
-        date: {
-          $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
+      this.getCollection(StatsCollection).countDocuments(
+        {
+          chainId,
+          status: 'error',
+          date: {
+            $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
+          },
         },
-      })
+        { session }
+      )
     )
   }
 
   async getOkRecordsCountForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<number, string>> {
     return await safe(
-      this.getCollection(StatsCollection).countDocuments({
-        chainId: chainId,
-        status: 'ok',
-      })
+      this.getCollection(StatsCollection).countDocuments(
+        {
+          chainId: chainId,
+          status: 'ok',
+        },
+        { session }
+      )
     )
   }
 
   async getOkRecordsCountLast24HoursForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<number, string>> {
     return await safe(
-      this.getCollection(StatsCollection).countDocuments({
-        chainId,
-        status: 'ok',
-        date: {
-          $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
+      this.getCollection(StatsCollection).countDocuments(
+        {
+          chainId,
+          status: 'ok',
+          date: {
+            $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
+          },
         },
-      })
+        { session }
+      )
     )
   }
 
   async getTotalRecordsCountForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<number, string>> {
     return await safe(
-      this.getCollection(StatsCollection).countDocuments({
-        chainId: chainId,
-      })
+      this.getCollection(StatsCollection).countDocuments(
+        {
+          chainId: chainId,
+        },
+        { session }
+      )
     )
   }
 
   async getTotalRecordsCountLast24HoursForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<number, string>> {
     return await safe(
-      this.getCollection(StatsCollection).countDocuments({
-        chainId,
-        date: {
-          $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
+      this.getCollection(StatsCollection).countDocuments(
+        {
+          chainId,
+          date: {
+            $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
+          },
         },
-      })
+        { session }
+      )
     )
   }
 
   async getAvgAttemptsLast24HoursForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<number, string>> {
     return (
       await safe(
         this.getCollection(StatsCollection)
-          .aggregate([
-            {
-              $match: {
-                chainId,
-                status: 'ok',
-                date: {
-                  $gte: new Date(
-                    Date.now() - 24 * 60 * 60 * 1000
-                  ).toUTCString(),
+          .aggregate(
+            [
+              {
+                $match: {
+                  chainId,
+                  status: 'ok',
+                  date: {
+                    $gte: new Date(
+                      Date.now() - 24 * 60 * 60 * 1000
+                    ).toUTCString(),
+                  },
                 },
               },
-            },
-            {
-              $group: {
-                _id: null,
-                avgAttempts: { $avg: '$attempts' },
+              {
+                $group: {
+                  _id: null,
+                  avgAttempts: { $avg: '$attempts' },
+                },
               },
-            },
-          ])
+            ],
+            { session }
+          )
           .toArray()
       )
     ).map((v) => v[0]?.avgAttempts as number)
   }
 
   async getAvgAttemptsForChainIdStats(
-    chainId: string
+    chainId: string,
+    session?: ClientSession
   ): Promise<Result<number, string>> {
     return (
       await safe(
         this.getCollection(StatsCollection)
-          .aggregate([
-            {
-              $match: {
-                chainId,
-                status: 'ok',
+          .aggregate(
+            [
+              {
+                $match: {
+                  chainId,
+                  status: 'ok',
+                },
               },
-            },
-            {
-              $group: {
-                _id: null,
-                avgAttempts: { $avg: '$attempts' },
+              {
+                $group: {
+                  _id: null,
+                  avgAttempts: { $avg: '$attempts' },
+                },
               },
-            },
-          ])
+            ],
+            { session }
+          )
           .toArray()
       )
     ).map((v) => v[0]?.avgAttempts as number)

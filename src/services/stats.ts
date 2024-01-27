@@ -56,15 +56,17 @@ export class StatsService {
       string
     >
   > {
-    return await this.storageRepo.withTx(async () => {
+    return await this.storageRepo.withTx(async (session) => {
       const countFromLanding =
-        await this.storageRepo.getTotalRecordsWithIsLandingStats()
+        await this.storageRepo.getTotalRecordsWithIsLandingStats(session)
       if (countFromLanding.err) {
         return countFromLanding
       }
 
       const countFromLanding24 =
-        await this.storageRepo.getTotalRecordsWithIsLandingLast24HoursStats()
+        await this.storageRepo.getTotalRecordsWithIsLandingLast24HoursStats(
+          session
+        )
       if (countFromLanding24.err) {
         return countFromLanding24
       }
@@ -72,47 +74,57 @@ export class StatsService {
       const perChainId: Record<string, StatsPerChain> = {}
       for (const chainId of env.SUPPORTED_CHAIN_IDS) {
         const popularRpc = await this.storageRepo.getPopularRpcForChainIdStats(
-          chainId
+          chainId,
+          session
         )
         if (popularRpc.err) {
           return popularRpc
         }
 
         const uniqueUsers =
-          await this.storageRepo.getUniqueUsersForChainIdStats(chainId)
+          await this.storageRepo.getUniqueUsersForChainIdStats(chainId, session)
         if (uniqueUsers.err) {
           return uniqueUsers
         }
 
         const responseTimeMs =
-          await this.storageRepo.getResponseTimeStatsForChainIdStats(chainId)
+          await this.storageRepo.getResponseTimeStatsForChainIdStats(
+            chainId,
+            session
+          )
         if (responseTimeMs.err) {
           return responseTimeMs
         }
 
         const topRpcs = await this.storageRepo.getTopChoosenRpcForChainIdStats(
-          chainId
+          chainId,
+          session
         )
         if (topRpcs.err) {
           return topRpcs
         }
 
         const errorCount =
-          await this.storageRepo.getErrorRecordsCountForChainIdStats(chainId)
+          await this.storageRepo.getErrorRecordsCountForChainIdStats(
+            chainId,
+            session
+          )
         if (errorCount.err) {
           return errorCount
         }
 
         const errorCount24 =
           await this.storageRepo.getErrorRecordsCountLast24HoursForChainIdStats(
-            chainId
+            chainId,
+            session
           )
         if (errorCount24.err) {
           return errorCount24
         }
 
         const okCount = await this.storageRepo.getOkRecordsCountForChainIdStats(
-          chainId
+          chainId,
+          session
         )
         if (okCount.err) {
           return okCount
@@ -120,35 +132,41 @@ export class StatsService {
 
         const okCount24 =
           await this.storageRepo.getOkRecordsCountLast24HoursForChainIdStats(
-            chainId
+            chainId,
+            session
           )
         if (okCount24.err) {
           return okCount24
         }
 
         const totalCount =
-          await this.storageRepo.getTotalRecordsCountForChainIdStats(chainId)
+          await this.storageRepo.getTotalRecordsCountForChainIdStats(
+            chainId,
+            session
+          )
         if (totalCount.err) {
           return totalCount
         }
 
         const totalCount24 =
           await this.storageRepo.getTotalRecordsCountLast24HoursForChainIdStats(
-            chainId
+            chainId,
+            session
           )
         if (totalCount24.err) {
           return totalCount24
         }
 
         const avgAttempts =
-          await this.storageRepo.getAvgAttemptsForChainIdStats(chainId)
+          await this.storageRepo.getAvgAttemptsForChainIdStats(chainId, session)
         if (avgAttempts.err) {
           return avgAttempts
         }
 
         const avgAttempts24 =
           await this.storageRepo.getAvgAttemptsLast24HoursForChainIdStats(
-            chainId
+            chainId,
+            session
           )
         if (avgAttempts24.err) {
           return avgAttempts24
