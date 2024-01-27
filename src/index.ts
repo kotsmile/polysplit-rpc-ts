@@ -24,7 +24,7 @@ async function initRpcs() {
   logger.info('initiating rpcs')
 
   for (const chainId of env.SUPPORTED_CHAIN_IDS) {
-    const rpc = await statsService.getPopularRpc(chainId)
+    const rpc = await statsService.getPopularRpcForChainId(chainId)
     if (rpc.err) {
       logger.warn(
         `failed to find popular rpc for chainId ${chainId} ${rpc.val}`
