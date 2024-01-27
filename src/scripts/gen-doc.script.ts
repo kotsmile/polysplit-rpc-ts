@@ -14,7 +14,7 @@ run('generating docs', () => {
     version: '1.0',
     title: 'Polysplit RPC',
     serverUrl: env.HOST,
-    composition: 'inline',
+    composition: 'components',
   }).getSpecAsYaml()
   fs.writeFileSync('./openapi.yml', yamlString)
 })

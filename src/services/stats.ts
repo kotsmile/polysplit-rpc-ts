@@ -6,34 +6,34 @@ import { z } from 'zod'
 
 export const StatsPerChainSchema = z.object({
   popularRpc: z.string(),
-  uniqueUsers: z.number(),
+  uniqueUsers: z.number().int(),
   responseTimeMs: z.object({
-    avg: z.number(),
-    min: z.number(),
-    max: z.number(),
+    avg: z.number().int(),
+    min: z.number().int(),
+    max: z.number().int(),
   }),
   topRpcs: z.array(z.string()),
-  errorCount: z.number(),
-  errorCount24: z.number(),
-  okCount: z.number(),
-  okCount24: z.number(),
-  totalCount: z.number(),
-  totalCount24: z.number(),
-  avgAttempts: z.number(),
-  avgAttempts24: z.number(),
+  errorCount: z.number().int(),
+  errorCount24: z.number().int(),
+  okCount: z.number().int(),
+  okCount24: z.number().int(),
+  totalCount: z.number().int(),
+  totalCount24: z.number().int(),
+  avgAttempts: z.number().int(),
+  avgAttempts24: z.number().int(),
 })
 
 type StatsPerChain = z.infer<typeof StatsPerChainSchema>
 
 export const StatsSharedSchema = z.object({
-  countFromLanding: z.number(),
-  countFromLanding24: z.number(),
+  countFromLanding: z.number().int(),
+  countFromLanding24: z.number().int(),
 })
 
 type StatsShared = z.infer<typeof StatsSharedSchema>
 
 export class StatsService {
-  constructor(private storageRepo: StorageRepo) {}
+  constructor(private storageRepo: StorageRepo) { }
 
   async insertStats(stats: Omit<Stats, 'date'>): Promise<Result<void, string>> {
     return await this.storageRepo.insertStats({

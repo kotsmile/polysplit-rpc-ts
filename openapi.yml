@@ -12,24 +12,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum:
-                      - success
-                  data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                    required:
-                      - status
-                    example:
-                      status: healthy
-                required:
-                  - status
-                  - data
+                $ref: "#/components/schemas/GetStatusSuccessfulResponse"
               examples:
                 example1:
                   value:
@@ -41,22 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum:
-                      - error
-                  error:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                    required:
-                      - message
-                required:
-                  - status
-                  - error
+                $ref: "#/components/schemas/GetStatusErrorResponse"
               examples:
                 example1:
                   value:
@@ -75,177 +43,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum:
-                      - success
-                  data:
-                    type: object
-                    properties:
-                      shared:
-                        type: object
-                        properties:
-                          countFromLanding:
-                            type: number
-                            format: double
-                            minimum: 5e-324
-                            exclusiveMinimum: false
-                            maximum: 1.7976931348623157e+308
-                            exclusiveMaximum: false
-                          countFromLanding24:
-                            type: number
-                            format: double
-                            minimum: 5e-324
-                            exclusiveMinimum: false
-                            maximum: 1.7976931348623157e+308
-                            exclusiveMaximum: false
-                        required:
-                          - countFromLanding
-                          - countFromLanding24
-                      perChainId:
-                        type: object
-                        additionalProperties:
-                          type: object
-                          properties:
-                            popularRpc:
-                              type: string
-                            uniqueUsers:
-                              type: number
-                              format: double
-                              minimum: 5e-324
-                              exclusiveMinimum: false
-                              maximum: 1.7976931348623157e+308
-                              exclusiveMaximum: false
-                            responseTimeMs:
-                              type: object
-                              properties:
-                                avg:
-                                  type: number
-                                  format: double
-                                  minimum: 5e-324
-                                  exclusiveMinimum: false
-                                  maximum: 1.7976931348623157e+308
-                                  exclusiveMaximum: false
-                                min:
-                                  type: number
-                                  format: double
-                                  minimum: 5e-324
-                                  exclusiveMinimum: false
-                                  maximum: 1.7976931348623157e+308
-                                  exclusiveMaximum: false
-                                max:
-                                  type: number
-                                  format: double
-                                  minimum: 5e-324
-                                  exclusiveMinimum: false
-                                  maximum: 1.7976931348623157e+308
-                                  exclusiveMaximum: false
-                              required:
-                                - avg
-                                - min
-                                - max
-                            topRpcs:
-                              type: array
-                              items:
-                                type: string
-                            errorCount:
-                              type: number
-                              format: double
-                              minimum: 5e-324
-                              exclusiveMinimum: false
-                              maximum: 1.7976931348623157e+308
-                              exclusiveMaximum: false
-                            errorCount24:
-                              type: number
-                              format: double
-                              minimum: 5e-324
-                              exclusiveMinimum: false
-                              maximum: 1.7976931348623157e+308
-                              exclusiveMaximum: false
-                            okCount:
-                              type: number
-                              format: double
-                              minimum: 5e-324
-                              exclusiveMinimum: false
-                              maximum: 1.7976931348623157e+308
-                              exclusiveMaximum: false
-                            okCount24:
-                              type: number
-                              format: double
-                              minimum: 5e-324
-                              exclusiveMinimum: false
-                              maximum: 1.7976931348623157e+308
-                              exclusiveMaximum: false
-                            totalCount:
-                              type: number
-                              format: double
-                              minimum: 5e-324
-                              exclusiveMinimum: false
-                              maximum: 1.7976931348623157e+308
-                              exclusiveMaximum: false
-                            totalCount24:
-                              type: number
-                              format: double
-                              minimum: 5e-324
-                              exclusiveMinimum: false
-                              maximum: 1.7976931348623157e+308
-                              exclusiveMaximum: false
-                            avgAttempts:
-                              type: number
-                              format: double
-                              minimum: 5e-324
-                              exclusiveMinimum: false
-                              maximum: 1.7976931348623157e+308
-                              exclusiveMaximum: false
-                            avgAttempts24:
-                              type: number
-                              format: double
-                              minimum: 5e-324
-                              exclusiveMinimum: false
-                              maximum: 1.7976931348623157e+308
-                              exclusiveMaximum: false
-                          required:
-                            - popularRpc
-                            - uniqueUsers
-                            - responseTimeMs
-                            - topRpcs
-                            - errorCount
-                            - errorCount24
-                            - okCount
-                            - okCount24
-                            - totalCount
-                            - totalCount24
-                            - avgAttempts
-                            - avgAttempts24
-                    required:
-                      - shared
-                      - perChainId
-                required:
-                  - status
-                  - data
+                $ref: "#/components/schemas/GetV1StatsSuccessfulResponse"
         "400":
           description: GET /v1/stats Error response
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum:
-                      - error
-                  error:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                    required:
-                      - message
-                required:
-                  - status
-                  - error
+                $ref: "#/components/schemas/GetV1StatsErrorResponse"
               examples:
                 example1:
                   value:
@@ -253,7 +57,211 @@ paths:
                     error:
                       message: Sample error message
 components:
-  schemas: {}
+  schemas:
+    GetStatusSuccessfulResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+          required:
+            - status
+          example:
+            status: healthy
+      required:
+        - status
+        - data
+    GetStatusErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - error
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+          required:
+            - message
+      required:
+        - status
+        - error
+    GetV1StatsSuccessfulResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+        data:
+          type: object
+          properties:
+            shared:
+              type: object
+              properties:
+                countFromLanding:
+                  type: integer
+                  format: int64
+                  minimum: -9007199254740991
+                  exclusiveMinimum: false
+                  maximum: 9007199254740991
+                  exclusiveMaximum: false
+                countFromLanding24:
+                  type: integer
+                  format: int64
+                  minimum: -9007199254740991
+                  exclusiveMinimum: false
+                  maximum: 9007199254740991
+                  exclusiveMaximum: false
+              required:
+                - countFromLanding
+                - countFromLanding24
+            perChainId:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  popularRpc:
+                    type: string
+                  uniqueUsers:
+                    type: integer
+                    format: int64
+                    minimum: -9007199254740991
+                    exclusiveMinimum: false
+                    maximum: 9007199254740991
+                    exclusiveMaximum: false
+                  responseTimeMs:
+                    type: object
+                    properties:
+                      avg:
+                        type: integer
+                        format: int64
+                        minimum: -9007199254740991
+                        exclusiveMinimum: false
+                        maximum: 9007199254740991
+                        exclusiveMaximum: false
+                      min:
+                        type: integer
+                        format: int64
+                        minimum: -9007199254740991
+                        exclusiveMinimum: false
+                        maximum: 9007199254740991
+                        exclusiveMaximum: false
+                      max:
+                        type: integer
+                        format: int64
+                        minimum: -9007199254740991
+                        exclusiveMinimum: false
+                        maximum: 9007199254740991
+                        exclusiveMaximum: false
+                    required:
+                      - avg
+                      - min
+                      - max
+                  topRpcs:
+                    type: array
+                    items:
+                      type: string
+                  errorCount:
+                    type: integer
+                    format: int64
+                    minimum: -9007199254740991
+                    exclusiveMinimum: false
+                    maximum: 9007199254740991
+                    exclusiveMaximum: false
+                  errorCount24:
+                    type: integer
+                    format: int64
+                    minimum: -9007199254740991
+                    exclusiveMinimum: false
+                    maximum: 9007199254740991
+                    exclusiveMaximum: false
+                  okCount:
+                    type: integer
+                    format: int64
+                    minimum: -9007199254740991
+                    exclusiveMinimum: false
+                    maximum: 9007199254740991
+                    exclusiveMaximum: false
+                  okCount24:
+                    type: integer
+                    format: int64
+                    minimum: -9007199254740991
+                    exclusiveMinimum: false
+                    maximum: 9007199254740991
+                    exclusiveMaximum: false
+                  totalCount:
+                    type: integer
+                    format: int64
+                    minimum: -9007199254740991
+                    exclusiveMinimum: false
+                    maximum: 9007199254740991
+                    exclusiveMaximum: false
+                  totalCount24:
+                    type: integer
+                    format: int64
+                    minimum: -9007199254740991
+                    exclusiveMinimum: false
+                    maximum: 9007199254740991
+                    exclusiveMaximum: false
+                  avgAttempts:
+                    type: integer
+                    format: int64
+                    minimum: -9007199254740991
+                    exclusiveMinimum: false
+                    maximum: 9007199254740991
+                    exclusiveMaximum: false
+                  avgAttempts24:
+                    type: integer
+                    format: int64
+                    minimum: -9007199254740991
+                    exclusiveMinimum: false
+                    maximum: 9007199254740991
+                    exclusiveMaximum: false
+                required:
+                  - popularRpc
+                  - uniqueUsers
+                  - responseTimeMs
+                  - topRpcs
+                  - errorCount
+                  - errorCount24
+                  - okCount
+                  - okCount24
+                  - totalCount
+                  - totalCount24
+                  - avgAttempts
+                  - avgAttempts24
+          required:
+            - shared
+            - perChainId
+      required:
+        - status
+        - data
+    GetV1StatsErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - error
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+          required:
+            - message
+      required:
+        - status
+        - error
   responses: {}
   parameters: {}
   examples: {}
