@@ -59,7 +59,9 @@ export async function postChainControllerV1(req: Request, res: Response) {
     return res.status(500).send(WELCOME_MESSAGE)
   }
 
+  let attempts = 0
   for (const url of rpcs) {
+    attempts++
     const response = await evmService.rpcRequest(url, req.body)
     if (response.err) {
       logger.error(`failed to request RPC ${url}: ${response.val.message}`)
@@ -75,6 +77,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       ip,
       isLanding,
+      attempts,
     })
     return res.send(response.val)
   }
