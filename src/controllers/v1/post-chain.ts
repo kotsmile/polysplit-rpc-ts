@@ -9,7 +9,7 @@ const WELCOME_MESSAGE =
   'If you have any questions or requests, just visit our website https://polysplit.cloud'
 
 export async function postChainControllerV1(req: Request, res: Response) {
-  const ip = req.header('x-forwarded-for') || req.socket.remoteAddress
+  const ip = req.header('x-forwarded-for') ?? req.socket.remoteAddress
   const isLanding = req.query.site !== undefined
 
   const start = startTimer()
