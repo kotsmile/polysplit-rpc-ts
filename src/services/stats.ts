@@ -44,12 +44,12 @@ export class StatsService {
         { $limit: 1 },
       ]
     )
-
+    console.log(response)
     if (response.err) {
       return Err(`failed to get most popular rpc: ${response.val}`)
     }
 
-    const rpc = (response.val[0] as unknown as Stats)?.choosenRpc
+    const rpc = (response.val[0] as unknown as { _id: string })?._id
     if (rpc === undefined) {
       return Ok(None)
     }
