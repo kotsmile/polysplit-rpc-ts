@@ -14,7 +14,7 @@ const proxySellerClient = new ProxySellerClient(
   env.PROXYSELLER_API_KEY,
   [
     { type: 'mix', orderId: '1953510' },
-    { type: 'mix', orderId: '1959084' },
+    // { type: 'mix', orderId: '1959084' },
   ],
   3000
 )

@@ -41,4 +41,14 @@ export class StorageDocRepo {
 
     return Ok(undefined)
   }
+
+  async aggregateMany<T extends Document>(
+    dbName: string,
+    collectionName: string,
+    pipeline: T[]
+  ): Promise<Result<T[], string>> {
+    const collection = this.client.db(dbName).collection<T>(collectionName)
+    const response = await safe(collection.aggregate<T>(pipeline).toArray())
+    return response.mapErr((err) => `failed to aggregate data: ${err}`)
+  }
 }
