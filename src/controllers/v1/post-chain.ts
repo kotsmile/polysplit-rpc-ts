@@ -5,6 +5,9 @@ import { rpcService, evmService, statsService } from '@/impl'
 import { endTimer, logger, startTimer } from '@/utils'
 import { env } from '@/env'
 
+const WELCOME_MESSAGE =
+  'If you have any questions or requests, just visit our site https://polysplit.cloud'
+
 export async function postChainControllerV1(req: Request, res: Response) {
   const start = startTimer()
 
@@ -19,9 +22,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       errorMessage: `chainId: ${chainId} is not supported`,
     })
-    return res
-      .status(404)
-      .send('If you have problems any visit our site https://polysplit.cloud')
+    return res.status(404).send(WELCOME_MESSAGE)
   }
 
   const rpcs = await rpcService.getRpcs(chainId)
@@ -34,9 +35,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       errorMessage: `faield to get rpcs for chainId: ${chainId}: ${rpcs.val}`,
     })
-    return res
-      .status(505)
-      .send('If you have problems any visit our site https://polysplit.cloud')
+    return res.status(505).send(WELCOME_MESSAGE)
   }
 
   if (rpcs.val.none) {
@@ -48,9 +47,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       errorMessage: `no rpcs for chainId: ${chainId}`,
     })
-    return res
-      .status(500)
-      .send('If you have problems any visit our site https://polysplit.cloud')
+    return res.status(500).send(WELCOME_MESSAGE)
   }
 
   for (const url of rpcs) {
@@ -79,7 +76,5 @@ export async function postChainControllerV1(req: Request, res: Response) {
     responseTimeMs: time,
     errorMessage: `failed to request all RPCs for chainId: ${chainId}`,
   })
-  return res
-    .status(500)
-    .send('If you have problems any visit our site https://polysplit.cloud')
+  return res.status(500).send(WELCOME_MESSAGE)
 }
