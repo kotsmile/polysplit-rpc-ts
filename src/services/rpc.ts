@@ -9,6 +9,11 @@ export type ChainConfig = {
   rpcs: string[]
 }
 
+// const extraRpcs = {
+//   '1': '',
+//   '56': ''
+// }
+//
 export class RpcService {
   RPC_KEY = 'chainId'
 

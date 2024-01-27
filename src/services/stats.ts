@@ -8,9 +8,9 @@ export const StatsPerChainSchema = z.object({
   popularRpc: z.string(),
   uniqueUsers: z.number().int(),
   responseTimeMs: z.object({
-    avg: z.number().int(),
-    min: z.number().int(),
-    max: z.number().int(),
+    avg: z.number(),
+    min: z.number(),
+    max: z.number(),
   }),
   topRpcs: z.array(z.string()),
   errorCount: z.number().int(),
@@ -19,8 +19,8 @@ export const StatsPerChainSchema = z.object({
   okCount24: z.number().int(),
   totalCount: z.number().int(),
   totalCount24: z.number().int(),
-  avgAttempts: z.number().int(),
-  avgAttempts24: z.number().int(),
+  avgAttempts: z.number(),
+  avgAttempts24: z.number(),
 })
 
 type StatsPerChain = z.infer<typeof StatsPerChainSchema>
