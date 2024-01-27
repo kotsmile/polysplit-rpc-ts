@@ -6,10 +6,11 @@ import { endTimer, logger, startTimer } from '@/utils'
 import { env } from '@/env'
 
 const WELCOME_MESSAGE =
-  'If you have any questions or requests, just visit our site https://polysplit.cloud'
+  'If you have any questions or requests, just visit our website https://polysplit.cloud'
 
 export async function postChainControllerV1(req: Request, res: Response) {
   const ip = req.header('x-forwarded-for') || req.socket.remoteAddress
+  const isLanding = req.query.site !== undefined
 
   const start = startTimer()
 
@@ -24,6 +25,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       errorMessage: `chainId: ${chainId} is not supported`,
       ip,
+      isLanding,
     })
     return res.status(404).send(WELCOME_MESSAGE)
   }
@@ -38,6 +40,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       errorMessage: `faield to get rpcs for chainId: ${chainId}: ${rpcs.val}`,
       ip,
+      isLanding,
     })
     return res.status(505).send(WELCOME_MESSAGE)
   }
@@ -51,6 +54,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       responseTimeMs: time,
       errorMessage: `no rpcs for chainId: ${chainId}`,
       ip,
+      isLanding,
     })
     return res.status(500).send(WELCOME_MESSAGE)
   }
@@ -70,6 +74,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       choosenRpc: url,
       responseTimeMs: time,
       ip,
+      isLanding,
     })
     return res.send(response.val)
   }
@@ -82,6 +87,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
     responseTimeMs: time,
     errorMessage: `failed to request all RPCs for chainId: ${chainId}`,
     ip,
+    isLanding,
   })
   return res.status(500).send(WELCOME_MESSAGE)
 }

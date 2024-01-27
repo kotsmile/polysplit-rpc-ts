@@ -10,6 +10,7 @@ export interface Stats {
   errorMessage?: string
   date: string
   ip?: string
+  isLanding?: boolean
 }
 
 export class StatsService {
