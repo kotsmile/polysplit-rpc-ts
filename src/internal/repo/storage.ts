@@ -261,7 +261,7 @@ export class StorageRepo {
           )
           .toArray()
       )
-    ).map((v) => v.map((el) => el._id as string))
+    ).map((v) => v.filter((el) => el._id).map((el) => el._id as string))
   }
 
   async getErrorRecordsCountForChainIdStats(
