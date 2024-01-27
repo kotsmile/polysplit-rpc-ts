@@ -52,6 +52,19 @@ export class StorageRepo {
     return Ok(undefined)
   }
 
+  async withTx<T>(
+    callback: () => Promise<Result<T, string>>
+  ): Promise<Result<T, string>> {
+    const session = this.client.startSession()
+    const result = await safe(session.withTransaction(callback))
+    await session.endSession()
+    if (result.err) {
+      return Err(`failed to execute transaction: ${result.val}`)
+    }
+
+    return result.val
+  }
+
   getCollection<T extends Document>({
     db,
     collection,
