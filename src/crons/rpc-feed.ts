@@ -10,6 +10,18 @@ import {
   timePromise,
 } from '@/utils'
 
+const TEST_BATCH = 5
+
+async function batchPromiseAll(
+  batchSize: number,
+  promises: Promise<unknown>[]
+) {
+  for (let i = 0; i < promises.length; i += batchSize) {
+    const batchPromises: Promise<unknown>[] = promises.slice(i, i + batchSize)
+    await Promise.all(batchPromises)
+  }
+}
+
 export async function rpcFeedCron() {
   logger.info('Collecting RPC Feed')
 
@@ -25,12 +37,19 @@ export async function rpcFeedCron() {
     logger.info(`rpc length for ${chainId}: ${rpcs.length}`)
 
     const metrics: { rpc: string; metrics: RpcMetrics }[] = []
+
+    const promises: Promise<unknown>[] = []
     for (const rpc of rpcs) {
-      metrics.push({
-        rpc,
-        metrics: await checkEvmRpc(chainId, rpc),
-      })
+      promises.push(
+        (async () => {
+          metrics.push({
+            rpc,
+            metrics: await checkEvmRpc(chainId, rpc),
+          })
+        })()
+      )
     }
+    await batchPromiseAll(TEST_BATCH, promises)
 
     const sortedOkMetrics = metrics
       .filter((rpc) => rpc.metrics.status === 'ok')
