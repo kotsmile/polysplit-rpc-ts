@@ -2,15 +2,13 @@ import type { Result } from 'ts-results'
 
 import type { StorageDocRepo } from '@/internal/repo/storage-doc'
 
-import { now } from '@/utils'
-
 export interface Stats {
   status: 'ok' | 'error'
   chainId: string
   responseTimeMs: number
   choosenRpc?: string
   errorMessage?: string
-  date: number
+  date: string
 }
 
 export class StatsService {
@@ -27,7 +25,7 @@ export class StatsService {
         this.collectionName,
         {
           ...stats,
-          date: now(),
+          date: new Date().toUTCString(),
         }
       )
     ).mapErr((err) => `failed to insert stats record: ${err}`)
