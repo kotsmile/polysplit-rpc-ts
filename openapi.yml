@@ -142,25 +142,25 @@ components:
                     type: object
                     properties:
                       avg:
-                        type: integer
-                        format: int64
-                        minimum: -9007199254740991
+                        type: number
+                        format: double
+                        minimum: 5e-324
                         exclusiveMinimum: false
-                        maximum: 9007199254740991
+                        maximum: 1.7976931348623157e+308
                         exclusiveMaximum: false
                       min:
-                        type: integer
-                        format: int64
-                        minimum: -9007199254740991
+                        type: number
+                        format: double
+                        minimum: 5e-324
                         exclusiveMinimum: false
-                        maximum: 9007199254740991
+                        maximum: 1.7976931348623157e+308
                         exclusiveMaximum: false
                       max:
-                        type: integer
-                        format: int64
-                        minimum: -9007199254740991
+                        type: number
+                        format: double
+                        minimum: 5e-324
                         exclusiveMinimum: false
-                        maximum: 9007199254740991
+                        maximum: 1.7976931348623157e+308
                         exclusiveMaximum: false
                     required:
                       - avg
@@ -213,18 +213,18 @@ components:
                     maximum: 9007199254740991
                     exclusiveMaximum: false
                   avgAttempts:
-                    type: integer
-                    format: int64
-                    minimum: -9007199254740991
+                    type: number
+                    format: double
+                    minimum: 5e-324
                     exclusiveMinimum: false
-                    maximum: 9007199254740991
+                    maximum: 1.7976931348623157e+308
                     exclusiveMaximum: false
                   avgAttempts24:
-                    type: integer
-                    format: int64
-                    minimum: -9007199254740991
+                    type: number
+                    format: double
+                    minimum: 5e-324
                     exclusiveMinimum: false
-                    maximum: 9007199254740991
+                    maximum: 1.7976931348623157e+308
                     exclusiveMaximum: false
                 required:
                   - popularRpc
