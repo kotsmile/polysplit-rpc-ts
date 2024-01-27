@@ -1,12 +1,7 @@
 {
   "engine": {
-    "node": "16"
+    "node": "18"
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "files": [
-    "./lib/**/*"
-  ],
   "scripts": {
     "dev": "tsup --watch --onSuccess \"yarn serve\"",
     "build": "yarn lint && yarn type && tsup",
