@@ -15,9 +15,8 @@
     "lint": "prettier --check ./src/**/* && eslint ./src",
     "format": "prettier --write ./src/**/*",
     "do": "./shell/script.sh",
-    "gen-client": "yarn openapi-zod-client ./openapi.yml -o ../frontend/api/client.ts",
-    "gen-doc": "yarn do gen-doc && yarn gen-swagger-page",
-    "gen-swagger-page": "node ./node_modules/swagger-to-static/index.js ./openapi.yml ./swagger"
+    "gen:client": "yarn openapi-zod-client ./openapi.yml -o ../polysplit-landing/api/client.ts",
+    "gen:doc": "yarn do gen-doc"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",

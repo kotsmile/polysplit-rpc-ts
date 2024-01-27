@@ -5,6 +5,7 @@ import { logger } from './logger'
 
 export * from './misc'
 export * from './logger'
+export * from './run'
 
 export async function safe<T>(promise: Promise<T>): Promise<Result<T, string>> {
   try {
