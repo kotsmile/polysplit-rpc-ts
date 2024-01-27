@@ -3,7 +3,7 @@ import { env } from './env'
 import { ProxySellerClient } from '@/internal/clients/proxy-seller'
 
 import { CacheRepo } from '@/internal/repo/cache'
-import { StorageDocRepo } from '@/internal/repo/storage-doc'
+import { StorageRepo } from '@/internal/repo/storage'
 
 import { EvmService } from '@/services/evm'
 import { ProxyService } from '@/services/proxy'
@@ -20,13 +20,9 @@ const proxySellerClient = new ProxySellerClient(
 )
 
 const cacheRepo = new CacheRepo()
-const storageDocRepo = new StorageDocRepo(env.MONGO_DB_URL)
+const storageRepo = new StorageRepo(env.MONGO_DB_URL)
 
 export const proxyService = new ProxyService(cacheRepo, proxySellerClient)
 export const evmService = new EvmService(proxyService, env.RESPONSE_TIMEOUT_MS)
 export const rpcService = new RpcService(cacheRepo)
-export const statsService = new StatsService(
-  storageDocRepo,
-  env.MONGO_DB_NAME,
-  env.MONGO_DB_STATS_COLLECTION
-)
+export const statsService = new StatsService(storageRepo)

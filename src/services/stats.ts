@@ -1,62 +1,30 @@
-import { Err, None, Ok, Some, Result, Option } from 'ts-results'
+import { Result, Option } from 'ts-results'
 
-import type { StorageDocRepo } from '@/internal/repo/storage-doc'
-
-export interface Stats {
-  status: 'ok' | 'error'
-  chainId: string
-  responseTimeMs: number
-  choosenRpc?: string
-  errorMessage?: string
-  date: string
-  ip?: string
-  isLanding?: boolean
-  attempts?: number
-}
+import type { StorageRepo, Stats } from '@/internal/repo/storage'
 
 export class StatsService {
-  constructor(
-    private storageDocRepo: StorageDocRepo,
-    private dbName: string,
-    private collectionName: string
-  ) { }
+  constructor(private storageDocRepo: StorageRepo) { }
 
-  async storeStats(stats: Omit<Stats, 'date'>): Promise<Result<void, string>> {
-    return (
-      await this.storageDocRepo.insertOne<Stats>(
-        this.dbName,
-        this.collectionName,
-        {
-          ...stats,
-          date: new Date().toUTCString(),
-        }
-      )
-    ).mapErr((err) => `failed to insert stats record: ${err}`)
+  async insertStats(stats: Omit<Stats, 'date'>): Promise<Result<void, string>> {
+    return await this.storageDocRepo.insertStats({
+      ...stats,
+      date: new Date().toUTCString(),
+    })
   }
 
   async getPopularRpc(
     chainId: string
   ): Promise<Result<Option<string>, string>> {
-    const response = await this.storageDocRepo.aggregateMany(
-      this.dbName,
-      this.collectionName,
-      [
-        { $match: { chainId } },
-        { $group: { _id: '$choosenRpc', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 1 },
-      ]
-    )
-    console.log(response)
-    if (response.err) {
-      return Err(`failed to get most popular rpc: ${response.val}`)
-    }
+    return await this.storageDocRepo.getPopularRpcStats(chainId)
+  }
 
-    const rpc = (response.val[0] as unknown as { _id: string })?._id
-    if (rpc === undefined) {
-      return Ok(None)
-    }
+  async getUniqueUsers(chainId: string): Promise<Result<number, string>> {
+    return await this.storageDocRepo.getUniqueUsersStats(chainId)
+  }
 
-    return Ok(Some(rpc))
+  async getStatisctiOfResponseTimeMs(
+    chainId: string
+  ): Promise<Result<{ avg: number; max: number; min: number }, string>> {
+    return await this.storageDocRepo.getStatisctiOfResponseTimeMsStats(chainId)
   }
 }

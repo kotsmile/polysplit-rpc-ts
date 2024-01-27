@@ -19,7 +19,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
   if (!env.SUPPORTED_CHAIN_IDS.includes(chainId)) {
     logger.error(`chainId: ${chainId} is not supported`)
     const time = endTimer(start)
-    await statsService.storeStats({
+    await statsService.insertStats({
       chainId,
       status: 'error',
       responseTimeMs: time,
@@ -34,7 +34,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
   if (rpcs.err) {
     logger.error(`faield to get rpcs for chainId: ${chainId}: ${rpcs.val}`)
     const time = endTimer(start)
-    await statsService.storeStats({
+    await statsService.insertStats({
       chainId,
       status: 'error',
       responseTimeMs: time,
@@ -48,7 +48,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
   if (rpcs.val.none) {
     logger.error(`no rpcs for chainId: ${chainId}`)
     const time = endTimer(start)
-    await statsService.storeStats({
+    await statsService.insertStats({
       chainId,
       status: 'error',
       responseTimeMs: time,
@@ -70,7 +70,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
 
     logger.debug(`success: chainId ${chainId} with rpc: ${url}`)
     const time = endTimer(start)
-    await statsService.storeStats({
+    await statsService.insertStats({
       chainId,
       status: 'ok',
       choosenRpc: url,
@@ -84,7 +84,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
 
   logger.error(`failed to request all RPCs for chainId: ${chainId}`)
   const time = endTimer(start)
-  await statsService.storeStats({
+  await statsService.insertStats({
     chainId,
     status: 'error',
     responseTimeMs: time,
