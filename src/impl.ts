@@ -9,6 +9,7 @@ import { EvmService } from '@/services/evm'
 import { ProxyService } from '@/services/proxy'
 import { RpcService } from '@/services/rpc'
 import { StatsService } from '@/services/stats'
+import { ChainlistClient } from './internal/clients/chainlist'
 
 const proxySellerClient = new ProxySellerClient(
   env.PROXYSELLER_API_KEY,
@@ -18,11 +19,12 @@ const proxySellerClient = new ProxySellerClient(
   ],
   3000
 )
+const chainlistClient = new ChainlistClient()
 
 const cacheRepo = new CacheRepo()
 const storageRepo = new StorageRepo(env.MONGO_DB_URL)
 
 export const proxyService = new ProxyService(cacheRepo, proxySellerClient)
 export const evmService = new EvmService(proxyService, env.RESPONSE_TIMEOUT_MS)
-export const rpcService = new RpcService(cacheRepo)
+export const rpcService = new RpcService(cacheRepo, chainlistClient)
 export const statsService = new StatsService(storageRepo)

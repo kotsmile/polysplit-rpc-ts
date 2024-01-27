@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { createHttpError, defaultEndpointsFactory } from 'express-zod-api'
+import { defaultEndpointsFactory } from 'express-zod-api'
+import createHttpError from 'http-errors'
 
 import { statsService } from '@/impl'
 import { StatsPerChainSchema, StatsSharedSchema } from '@/services/stats'
@@ -14,7 +15,7 @@ export default defaultEndpointsFactory.build({
   async handler() {
     const stats = await statsService.getStatisticOfUsage()
     if (stats.err) {
-      throw createHttpError(500, 'Internal error')
+      throw createHttpError.InternalServerError('Internal error')
     }
 
     return stats.val

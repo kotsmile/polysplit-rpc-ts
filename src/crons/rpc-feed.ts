@@ -14,20 +14,20 @@ export async function rpcFeedCron() {
   logger.info('Collecting RPC Feed')
 
   for (const chainId of env.SUPPORTED_CHAIN_IDS) {
-    const chain = rpcService
-      .getChainConfig(chainId)
-      .expect(`failed to fetch chainId for ${chainId}`)
+    const rpcs = (await rpcService.fetchChainRpcs(chainId)).expect(
+      `no rpcs for chainId: ${chainId}`
+    )
 
-    if (chain.rpcs.length === 0) {
-      logger.warn(`Skip ${chain.chainId} zero length rpcs`)
+    if (rpcs.length === 0) {
+      logger.warn(`Skip ${chainId} zero length rpcs`)
       return false
     }
 
     const metrics: { rpc: string; metrics: RpcMetrics }[] = []
-    for (const rpc of chain.rpcs) {
+    for (const rpc of rpcs) {
       metrics.push({
         rpc,
-        metrics: await checkEvmRpc(chain.chainId, rpc),
+        metrics: await checkEvmRpc(chainId, rpc),
       })
     }
 
@@ -36,19 +36,19 @@ export async function rpcFeedCron() {
       .sort((r1, r2) => r1.metrics.responseTime - r2.metrics.responseTime)
 
     if (sortedOkMetrics.length === 0) {
-      logger.warn(`Bad rpc chainId: ${chain.chainId}, ${chain.name}`)
+      logger.warn(`Bad rpc chainId: ${chainId}`)
       return false
     }
 
     const topRpcs = sortedOkMetrics.map((r) => r.rpc)
-    const response = await rpcService.setRpcs(chain.chainId, topRpcs)
+    const response = await rpcService.setRpcs(chainId, topRpcs)
     if (response.err) {
       logger.error(`Failed to store top rpcs: ${response.val}`)
       return false
     }
 
     logger.debug(
-      `ChainId: ${chain.chainId}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime}`
+      `ChainId: ${chainId}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime}`
     )
   }
   return true

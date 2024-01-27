@@ -51,7 +51,7 @@ async function initRpcs() {
 async function main() {
   await initRpcs()
 
-  const { notFoundHandler } = attachRouting(config, routing)
+  const { notFoundHandler } = await attachRouting(config, routing)
   expressApp.use(notFoundHandler) // optional
   expressApp.listen(env.PORT)
 }

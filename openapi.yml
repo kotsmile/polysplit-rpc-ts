@@ -1,30 +1,30 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   title: Polysplit RPC
-  version: "1.0"
+  version: '1.0'
 paths:
   /status:
     get:
       operationId: GetStatus
       responses:
-        "200":
-          description: GET /status Successful response
+        '200':
+          description: GET /status Positive response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetStatusSuccessfulResponse"
+                $ref: '#/components/schemas/GetStatusPositiveResponse'
               examples:
                 example1:
                   value:
                     status: success
                     data:
                       status: healthy
-        "400":
-          description: GET /status Error response
+        '400':
+          description: GET /status Negative response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetStatusErrorResponse"
+                $ref: '#/components/schemas/GetStatusNegativeResponse'
               examples:
                 example1:
                   value:
@@ -38,18 +38,18 @@ paths:
     get:
       operationId: GetV1Stats
       responses:
-        "200":
-          description: GET /v1/stats Successful response
+        '200':
+          description: GET /v1/stats Positive response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetV1StatsSuccessfulResponse"
-        "400":
-          description: GET /v1/stats Error response
+                $ref: '#/components/schemas/GetV1StatsPositiveResponse'
+        '400':
+          description: GET /v1/stats Negative response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetV1StatsErrorResponse"
+                $ref: '#/components/schemas/GetV1StatsNegativeResponse'
               examples:
                 example1:
                   value:
@@ -58,7 +58,7 @@ paths:
                       message: Sample error message
 components:
   schemas:
-    GetStatusSuccessfulResponse:
+    GetStatusPositiveResponse:
       type: object
       properties:
         status:
@@ -72,12 +72,12 @@ components:
               type: string
           required:
             - status
-          example:
-            status: healthy
+          examples:
+            - status: healthy
       required:
         - status
         - data
-    GetStatusErrorResponse:
+    GetStatusNegativeResponse:
       type: object
       properties:
         status:
@@ -94,7 +94,7 @@ components:
       required:
         - status
         - error
-    GetV1StatsSuccessfulResponse:
+    GetV1StatsPositiveResponse:
       type: object
       properties:
         status:
@@ -111,16 +111,12 @@ components:
                   type: integer
                   format: int64
                   minimum: -9007199254740991
-                  exclusiveMinimum: false
                   maximum: 9007199254740991
-                  exclusiveMaximum: false
                 countFromLanding24:
                   type: integer
                   format: int64
                   minimum: -9007199254740991
-                  exclusiveMinimum: false
                   maximum: 9007199254740991
-                  exclusiveMaximum: false
               required:
                 - countFromLanding
                 - countFromLanding24
@@ -135,33 +131,25 @@ components:
                     type: integer
                     format: int64
                     minimum: -9007199254740991
-                    exclusiveMinimum: false
                     maximum: 9007199254740991
-                    exclusiveMaximum: false
                   responseTimeMs:
                     type: object
                     properties:
                       avg:
                         type: number
                         format: double
-                        minimum: 5e-324
-                        exclusiveMinimum: false
+                        minimum: -900719254740991
                         maximum: 1.7976931348623157e+308
-                        exclusiveMaximum: false
                       min:
                         type: number
                         format: double
-                        minimum: 5e-324
-                        exclusiveMinimum: false
+                        minimum: -900719254740991
                         maximum: 1.7976931348623157e+308
-                        exclusiveMaximum: false
                       max:
                         type: number
                         format: double
-                        minimum: 5e-324
-                        exclusiveMinimum: false
+                        minimum: -900719254740991
                         maximum: 1.7976931348623157e+308
-                        exclusiveMaximum: false
                     required:
                       - avg
                       - min
@@ -174,58 +162,42 @@ components:
                     type: integer
                     format: int64
                     minimum: -9007199254740991
-                    exclusiveMinimum: false
                     maximum: 9007199254740991
-                    exclusiveMaximum: false
                   errorCount24:
                     type: integer
                     format: int64
                     minimum: -9007199254740991
-                    exclusiveMinimum: false
                     maximum: 9007199254740991
-                    exclusiveMaximum: false
                   okCount:
                     type: integer
                     format: int64
                     minimum: -9007199254740991
-                    exclusiveMinimum: false
                     maximum: 9007199254740991
-                    exclusiveMaximum: false
                   okCount24:
                     type: integer
                     format: int64
                     minimum: -9007199254740991
-                    exclusiveMinimum: false
                     maximum: 9007199254740991
-                    exclusiveMaximum: false
                   totalCount:
                     type: integer
                     format: int64
                     minimum: -9007199254740991
-                    exclusiveMinimum: false
                     maximum: 9007199254740991
-                    exclusiveMaximum: false
                   totalCount24:
                     type: integer
                     format: int64
                     minimum: -9007199254740991
-                    exclusiveMinimum: false
                     maximum: 9007199254740991
-                    exclusiveMaximum: false
                   avgAttempts:
                     type: number
                     format: double
-                    minimum: 5e-324
-                    exclusiveMinimum: false
+                    minimum: -900719254740991
                     maximum: 1.7976931348623157e+308
-                    exclusiveMaximum: false
                   avgAttempts24:
                     type: number
                     format: double
-                    minimum: 5e-324
-                    exclusiveMinimum: false
+                    minimum: -900719254740991
                     maximum: 1.7976931348623157e+308
-                    exclusiveMaximum: false
                 required:
                   - popularRpc
                   - uniqueUsers
@@ -245,7 +217,7 @@ components:
       required:
         - status
         - data
-    GetV1StatsErrorResponse:
+    GetV1StatsNegativeResponse:
       type: object
       properties:
         status:

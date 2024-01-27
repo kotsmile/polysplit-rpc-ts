@@ -1,23 +1,22 @@
-import { None, Some, Option, Result } from 'ts-results'
+import { Option, Result, Err, Ok, None, Some } from 'ts-results'
 
 import { CacheRepo } from '@/internal/repo/cache'
 import chains from '@/services/chains.json'
+import { ChainlistClient } from '@/internal/clients/chainlist'
+import { logger } from '@/utils'
 
 export type ChainConfig = {
   chainId: string
-  name: string
   rpcs: string[]
 }
 
-// const extraRpcs = {
-//   '1': '',
-//   '56': ''
-// }
-//
 export class RpcService {
   RPC_KEY = 'chainId'
 
-  constructor(private cache: CacheRepo) {}
+  constructor(
+    private cacheRepo: CacheRepo,
+    private chainlistClient: ChainlistClient
+  ) {}
 
   getRpcKey(chainId: string): string {
     return `${this.RPC_KEY}.${chainId}`
@@ -27,14 +26,14 @@ export class RpcService {
     chainId: string,
     rpcs: string[]
   ): Promise<Result<boolean, string>> {
-    return (await this.cache.setValue(this.getRpcKey(chainId), rpcs)).mapErr(
-      (err) => `failed to set rpcs: ${err}`
-    )
+    return (
+      await this.cacheRepo.setValue(this.getRpcKey(chainId), rpcs)
+    ).mapErr((err) => `failed to set rpcs: ${err}`)
   }
 
   async getRpcs(chainId: string): Promise<Result<Option<string[]>, string>> {
     return (
-      await this.cache.getValue<string[]>(this.getRpcKey(chainId))
+      await this.cacheRepo.getValue<string[]>(this.getRpcKey(chainId))
     ).mapErr((err) => `failed to get rpcs: ${err}`)
   }
 
@@ -45,5 +44,33 @@ export class RpcService {
     }
 
     return Some(chainConfig)
+  }
+
+  async fetchChainRpcs(chainId: string): Promise<Result<string[], string>> {
+    const allRpcs = await this.chainlistClient.fetchRpcs()
+    if (allRpcs.err) {
+      logger.warn(`failed to fetch rpcs: ${allRpcs.val}`)
+      const backup = this.getChainConfig(chainId)
+      if (backup.some) {
+        return Ok(backup.val.rpcs)
+      } else {
+        return Err(
+          `failed to fetch rpcs and use backup for chainId: ${chainId}`
+        )
+      }
+    }
+
+    const rpcs = allRpcs.val[chainId]
+    if (rpcs === undefined) {
+      logger.warn(`no rpcs for chainId: ${chainId}`)
+      const backup = this.getChainConfig(chainId)
+      if (backup.some) {
+        return Ok(backup.val.rpcs)
+      } else {
+        return Err(`no rpcs for chainId: ${chainId}`)
+      }
+    }
+
+    return Ok(rpcs)
   }
 }
