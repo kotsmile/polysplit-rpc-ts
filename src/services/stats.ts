@@ -9,6 +9,7 @@ export interface Stats {
   choosenRpc?: string
   errorMessage?: string
   date: string
+  ip?: string
 }
 
 export class StatsService {

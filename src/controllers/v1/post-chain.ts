@@ -9,6 +9,8 @@ const WELCOME_MESSAGE =
   'If you have any questions or requests, just visit our site https://polysplit.cloud'
 
 export async function postChainControllerV1(req: Request, res: Response) {
+  const ip = req.header('x-forwarded-for') || req.socket.remoteAddress
+
   const start = startTimer()
 
   const chainId = req.params.chainId ?? '-'
@@ -21,6 +23,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       status: 'error',
       responseTimeMs: time,
       errorMessage: `chainId: ${chainId} is not supported`,
+      ip,
     })
     return res.status(404).send(WELCOME_MESSAGE)
   }
@@ -34,6 +37,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       status: 'error',
       responseTimeMs: time,
       errorMessage: `faield to get rpcs for chainId: ${chainId}: ${rpcs.val}`,
+      ip,
     })
     return res.status(505).send(WELCOME_MESSAGE)
   }
@@ -46,6 +50,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       status: 'error',
       responseTimeMs: time,
       errorMessage: `no rpcs for chainId: ${chainId}`,
+      ip,
     })
     return res.status(500).send(WELCOME_MESSAGE)
   }
@@ -64,6 +69,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
       status: 'ok',
       choosenRpc: url,
       responseTimeMs: time,
+      ip,
     })
     return res.send(response.val)
   }
@@ -75,6 +81,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
     status: 'error',
     responseTimeMs: time,
     errorMessage: `failed to request all RPCs for chainId: ${chainId}`,
+    ip,
   })
   return res.status(500).send(WELCOME_MESSAGE)
 }
