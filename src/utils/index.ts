@@ -101,6 +101,7 @@ export function createAndRunCronJob(
 ): void {
   new CronJob({
     cronTime,
+    start: true,
     async onTick() {
       try {
         const response = await executer()

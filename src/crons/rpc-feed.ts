@@ -23,7 +23,7 @@ async function batchPromiseAll(
 }
 
 export async function rpcFeedCron() {
-  logger.info('Collecting RPC Feed')
+  logger.info('cron collecting RPC Feed')
   const allRpcs = await rpcService.fetchAllRpcs()
   if (allRpcs.err) {
     logger.error(`no rpcs was found: ${allRpcs.val}`)
@@ -34,10 +34,10 @@ export async function rpcFeedCron() {
     const rpcs = allRpcs.val[chainId] ?? []
 
     if (rpcs.length === 0) {
-      logger.warn(`Skip ${chainId} zero length rpcs`)
+      logger.debug(`Skip ${chainId} zero length rpcs`)
       return false
     }
-    logger.info(`rpc length for ${chainId}: ${rpcs.length}`)
+    logger.debug(`rpc length for ${chainId}: ${rpcs.length}`)
 
     const metrics: { rpc: string; metrics: RpcMetrics }[] = []
 
@@ -59,7 +59,7 @@ export async function rpcFeedCron() {
       .sort((r1, r2) => r1.metrics.responseTime - r2.metrics.responseTime)
 
     if (sortedOkMetrics.length === 0) {
-      logger.warn(`Bad rpc chainId: ${chainId}`)
+      logger.debug(`Bad rpc chainId: ${chainId}`)
       return false
     }
 
@@ -110,7 +110,7 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
       )
     )
     if (response.err) {
-      logger.error(response.val.message, url)
+      logger.debug(response.val.message, url)
       failed++
       continue
     }

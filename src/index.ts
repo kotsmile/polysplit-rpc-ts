@@ -12,10 +12,10 @@ import { logger } from '@/utils'
 
 // init crons
 import { rpcFeedCron } from '@/crons/rpc-feed'
+
 import '@/crons/rpc-feed'
 import '@/crons/stats-saving'
 import '@/crons/stats-rotation'
-import { statsSavingCron } from '@/crons/stats-saving'
 
 proxyService.initProxies().then((val) => {
   if (val.err) {
@@ -91,15 +91,10 @@ async function main() {
   expressApp.use(notFoundHandler) // optional
 
   expressApp.listen(env.PORT)
-  //
   process.on('SIGTERM', async () => {
-    await statsSavingCron()
     await storageRepo.disconnect()
+    await statsService.saveStats()
   })
-  // process.on('SIGKILL', async () => {
-  // await statsSavingCron()
-  // await storageRepo.disconnect()
-  // })
 
   await initRpcs()
 }

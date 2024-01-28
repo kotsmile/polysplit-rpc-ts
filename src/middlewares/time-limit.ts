@@ -1,15 +1,14 @@
 import { NextFunction, Request, Response } from 'express'
-import createHttpError from 'http-errors'
 
-export function timeLimit(limit: number, per: number) {
+export function timeLimit(limit: number, perPeriod: number) {
   let requests = 0
-  setTimeout(() => (requests = 0), per)
-  return (_req: Request, _res: Response, next: NextFunction) => {
+  setTimeout(() => (requests = 0), perPeriod)
+  return (_req: Request, res: Response, next: NextFunction) => {
     requests++
     if (requests > limit) {
-      next(createHttpError.TooManyRequests('Too many requests'))
+      return res.status(429).send('Too many requests')
     } else {
-      next()
+      return next()
     }
   }
 }
