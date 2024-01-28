@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PSQL_DB_URL")
+}
+
+generator zod {
+  provider = "zod-prisma"
+  output   = "../src/internal/repo/storage/zod"
+}
+
+enum StatsStatus {
+  OK
+  ERROR
+}
+
+model Stats {
+  id Int @id @default(autoincrement())
+
+  chainId String
+  status  StatsStatus
+
+  responseTimeMs Int
+  choosenRpc     String
+  ip             String?
+  isLanding      Boolean
+  attempts       Int
+  errorMessage   String?
+
+  created_at DateTime
+}

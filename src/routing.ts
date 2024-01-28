@@ -3,12 +3,16 @@ import { expressApp } from '@/app'
 
 import getStatusController from '@/controllers/get-status'
 import getStatsController from '@/controllers/v1/get-stats'
+import getStatsChainController from '@/controllers/v1/get-stats-chain'
 import { postChainControllerV1 } from '@/controllers/v1/post-chain'
 
 export const routing: Routing = {
   status: getStatusController,
   v1: {
-    stats: getStatsController,
+    stats: {
+      all: getStatsController,
+      ':chainId': getStatsChainController,
+    },
   },
 }
 
