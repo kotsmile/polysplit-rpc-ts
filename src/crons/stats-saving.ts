@@ -12,4 +12,4 @@ async function statsSavingCron(): Promise<boolean> {
   return true
 }
 
-createAndRunCronJob('0 */15 * * *', statsSavingCron)
+createAndRunCronJob('0 */5 * * *', statsSavingCron)
