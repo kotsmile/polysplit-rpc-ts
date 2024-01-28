@@ -1,7 +1,7 @@
 import { statsService } from '@/impl'
 import { createAndRunCronJob, logger } from '@/utils'
 
-createAndRunCronJob('*/1 * * * *', async () => {
+createAndRunCronJob('*/5 * * * *', async () => {
   logger.info('cron stats saving')
   const response = await statsService.saveStats()
   if (response.err) {

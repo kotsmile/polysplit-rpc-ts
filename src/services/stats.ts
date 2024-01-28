@@ -41,10 +41,10 @@ export const StatsSharedSchema = z.object({
 type StatsShared = z.infer<typeof StatsSharedSchema>
 
 const STATS_KEY = 'stats'
-const UPDATE_BATCH = 10
+const UPDATE_BATCH = 1000
 
 export class StatsService {
-  constructor(private storageRepo: StorageRepo, private cacheRepo: CacheRepo) {}
+  constructor(private storageRepo: StorageRepo, private cacheRepo: CacheRepo) { }
 
   async insertStats(
     stats: Omit<Stats, 'id' | 'created_at'>
