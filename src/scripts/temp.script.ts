@@ -11,10 +11,12 @@ run('temp', async () => {
 
   const a = true
   while (a) {
-    for (const chainId of ids) {
+    for (let chainId of ids) {
+      chainId = '1'
+
       console.log('chainId', chainId)
-      // const rpc = 'https://rpc.polysplit.cloud/v1/chain/' + chainId
-      const rpc = 'http://localhost:3001/v1/chain/' + chainId
+      const rpc = 'https://rpc.polysplit.cloud/v1/chain/' + chainId
+      // const rpc = 'http://localhost:3001/v1/chain/' + chainId
       const provider = new JsonRpcProvider(rpc)
       const res = await safe(timePromise(provider.getBlockNumber()))
       console.log(res.val[1])

@@ -62,6 +62,7 @@ export async function rpcFeedCron() {
       logger.debug(`Bad rpc chainId: ${chainId}`)
       return false
     }
+    console.log(sortedOkMetrics)
 
     const topRpcs = sortedOkMetrics.map((r) => r.rpc)
     const response = await rpcService.setRpcs(chainId, topRpcs)
@@ -71,7 +72,7 @@ export async function rpcFeedCron() {
     }
 
     logger.info(
-      `ChainId: ${chainId}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime}`
+      `ChainId: ${chainId}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime} - ${sortedOkMetrics[0]?.rpc} `
     )
   }
   return true
@@ -140,7 +141,7 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
 
   const responseTime = Math.floor(totalTime / env.RESPONSE_AMOUNT)
 
-  logger.debug(`RPC ${url}: ${responseTime}ms`)
+  logger.debug(`RPC ${url}: ${responseTime} ms`)
   return {
     status: 'ok',
     responseTime,
@@ -148,4 +149,4 @@ async function checkEvmRpc(chainId: string, url: string): Promise<RpcMetrics> {
   }
 }
 
-createAndRunCronJob(`${env.RPC_FEED_CRON} * * * *`, rpcFeedCron)
+createAndRunCronJob(`${env.RPC_FEED_CRON} * * * * `, rpcFeedCron)
