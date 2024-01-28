@@ -8,4 +8,4 @@ async function statsRotationCron(): Promise<boolean> {
   return response
 }
 
-createAndRunCronJob('*/5 * * * *', statsRotationCron)
+createAndRunCronJob('0 0 */3 * *', statsRotationCron)
