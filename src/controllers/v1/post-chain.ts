@@ -66,7 +66,7 @@ export async function postChainControllerV1(req: Request, res: Response) {
     return res.status(500).send(WELCOME_MESSAGE)
   }
 
-  for (let j = 1; j < 3; j++) {
+  for (let j = 1; j < 5; j++) {
     const responseTimeMs = evmService.maxResponseTimeMs
     let attempts = 0
     for (const url of rpcs) {
