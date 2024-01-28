@@ -161,7 +161,7 @@ export class StorageRepo {
         .aggregate(
           [
             {
-              $match: { chainId },
+              $match: { chainId, status: 'ok' },
             },
             {
               $group: {
