@@ -4,6 +4,7 @@ import { z } from 'zod'
 import type { StorageRepo } from '@/internal/repo/storage'
 import { env } from '@/env'
 import { Stats } from '@prisma/client'
+import { unused$ } from '@/utils'
 
 export const StatsPerChainSchema = z.object({
   popularRpc: z.string(),
@@ -39,19 +40,21 @@ export const StatsSharedSchema = z.object({
 type StatsShared = z.infer<typeof StatsSharedSchema>
 
 export class StatsService {
-  constructor(private storageRepo: StorageRepo) {}
+  constructor(private storageRepo: StorageRepo) { }
 
   async insertStats(
     stats: Omit<Stats, 'id' | 'created_at'>
   ): Promise<Result<void, string>> {
-    if (env.ENV === 'development') {
-      return Ok(undefined)
-    }
-
-    return await this.storageRepo.insertStats({
-      ...stats,
-      created_at: new Date(),
-    })
+    unused$(stats)
+    return Ok(undefined)
+    // if (env.ENV === 'development') {
+    //   return Ok(undefined)
+    // }
+    //
+    // return await this.storageRepo.insertStats({
+    //   ...stats,
+    //   created_at: new Date(),
+    // })
   }
 
   async getPopularRpcForChainId(
