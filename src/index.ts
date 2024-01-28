@@ -16,6 +16,7 @@ import { rpcFeedCron } from '@/crons/rpc-feed'
 import '@/crons/rpc-feed'
 import '@/crons/stats-saving'
 import '@/crons/stats-rotation'
+import '@/crons/proxy-rotation'
 
 proxyService.initProxies().then((val) => {
   if (val.err) {
