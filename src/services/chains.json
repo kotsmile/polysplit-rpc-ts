@@ -1,609 +1,106 @@
 [
   {
     "chainId": "1",
-    "name": "Ethereum Mainnet",
-    "rpcs": [
-      "https://api.mycryptoapi.com/eth",
-      "https://cloudflare-eth.com",
-      "https://ethereum.publicnode.com",
-      "https://mainnet.gateway.tenderly.co",
-      "https://rpc.blocknative.com/boost",
-      "https://rpc.flashbots.net",
-      "https://rpc.flashbots.net/fast",
-      "https://rpc.mevblocker.io",
-      "https://rpc.mevblocker.io/fast",
-      "https://rpc.mevblocker.io/noreverts",
-      "https://rpc.mevblocker.io/fullprivacy",
-      "https://endpoints.omniatech.io/v1/eth/mainnet/public",
-      "https://rpc.ankr.com/eth",
-      "https://go.getblock.io/d7dab8149ec04390aaa923ff2768f914",
-      "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7",
-      "https://ethereum.publicnode.com",
-      "https://1rpc.io/eth",
-      "https://rpc.builder0x69.io/",
-      "https://rpc.mevblocker.io",
-      "https://rpc.flashbots.net/",
-      "https://virginia.rpc.blxrbdn.com/",
-      "https://uk.rpc.blxrbdn.com/",
-      "https://singapore.rpc.blxrbdn.com/",
-      "https://eth.rpc.blxrbdn.com/",
-      "https://cloudflare-eth.com/",
-      "https://eth-mainnet.public.blastapi.io",
-      "https://api.securerpc.com/v1",
-      "https://openapi.bitstack.com/v1/wNFxbiJyQsSeLrX8RRCHi7NpRxrlErZk/DjShIqLishPCTB9HiMkPHXjUM9CNM9Na/ETH/mainnet",
-      "https://eth-pokt.nodies.app",
-      "https://eth-mainnet-public.unifra.io",
-      "https://ethereum.blockpi.network/v1/rpc/public",
-      "https://rpc.payload.de",
-      "https://api.zmok.io/mainnet/oaen6dy8ff6hju9k",
-      "https://eth-mainnet.g.alchemy.com/v2/demo",
-      "https://eth.api.onfinality.io/public",
-      "https://core.gashawk.io/rpc",
-      "https://mainnet.eth.cloud.ava.do/",
-      "https://ethereumnodelight.app.runonflux.io",
-      "https://eth-mainnet.rpcfast.com?api_key=xbhWBI1Wkguk8SNMu1bvvLurPGLXmgwYeC4S6g2H7WdwFigZSmPWVZRxrskEQwIf",
-      "https://main-light.eth.linkpool.io",
-      "https://rpc.eth.gateway.fm",
-      "https://rpc.chain49.com/ethereum?api_key=14d1a8b86d8a4b4797938332394203dc",
-      "https://eth.meowrpc.com",
-      "https://eth.drpc.org",
-      "https://mainnet.gateway.tenderly.co",
-      "https://rpc.tenderly.co/fork/c63af728-a183-4cfb-b24e-a92801463484",
-      "https://gateway.tenderly.co/public/mainnet",
-      "https://api.zan.top/node/v1/eth/mainnet/public",
-      "https://eth-mainnet.diamondswap.org/rpc",
-      "https://rpc.notadegen.com/eth",
-      "https://eth.merkle.io",
-      "https://rpc.lokibuilder.xyz/wallet",
-      "https://services.tokenview.io/vipapi/nodeservice/eth?apikey=qVHq2o6jpaakcw3lRstl",
-      "https://eth.nodeconnect.org/",
-      "https://eth.llamarpc.com"
-    ]
+    "name": "Ethereum Mainnet"
   },
   {
     "chainId": "5",
-    "name": "Goerli",
-    "rpcs": [
-      "https://rpc.goerli.mudit.blog/",
-      "https://ethereum-goerli.publicnode.com",
-      "https://goerli.gateway.tenderly.co",
-      "https://rpc.ankr.com/eth_goerli",
-      "https://endpoints.omniatech.io/v1/eth/goerli/public",
-      "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
-      "https://eth-goerli.public.blastapi.io",
-      "https://eth-goerli.g.alchemy.com/v2/demo",
-      "https://goerli.blockpi.network/v1/rpc/public",
-      "https://eth-goerli.api.onfinality.io/public",
-      "https://rpc.goerli.eth.gateway.fm",
-      "https://ethereum-goerli.publicnode.com",
-      "https://goerli.gateway.tenderly.co",
-      "https://gateway.tenderly.co/public/goerli",
-      "https://api.zan.top/node/v1/eth/goerli/public",
-      "https://builder-rpc1.0xblockswap.com",
-      "https://builder-rpc2.0xblockswap.com"
-    ]
+    "name": "Goerli"
   },
   {
     "chainId": "10",
-    "name": "OP Mainnet",
-    "rpcs": [
-      "https://mainnet.optimism.io",
-      "https://optimism.publicnode.com",
-      "https://optimism.gateway.tenderly.co",
-      "https://mainnet.optimism.io/",
-      "https://optimism-mainnet.public.blastapi.io",
-      "https://rpc.ankr.com/optimism",
-      "https://1rpc.io/op",
-      "https://op-pokt.nodies.app",
-      "https://opt-mainnet.g.alchemy.com/v2/demo",
-      "https://optimism.blockpi.network/v1/rpc/public",
-      "https://endpoints.omniatech.io/v1/op/mainnet/public",
-      "https://optimism.api.onfinality.io/public",
-      "https://rpc.optimism.gateway.fm",
-      "https://optimism.publicnode.com",
-      "https://optimism.meowrpc.com",
-      "https://api.zan.top/node/v1/opt/mainnet/public",
-      "https://optimism.drpc.org",
-      "https://optimism.gateway.tenderly.co",
-      "https://gateway.tenderly.co/public/optimism",
-      "https://optimism.llamarpc.com"
-    ]
-  },
-  {
-    "chainId": "25",
-    "name": "Cronos Mainnet",
-    "rpcs": [
-      "https://evm.cronos.org",
-      "https://cronos-evm.publicnode.com",
-      "https://evm.cronos.org",
-      "https://cronos-rpc.elk.finance/",
-      "https://cronos.blockpi.network/v1/rpc/public",
-      "https://cronos-evm.publicnode.com",
-      "https://1rpc.io/cro"
-    ]
+    "name": "OP Mainnet"
   },
   {
     "chainId": "56",
-    "name": "BNB Smart Chain Mainnet",
-    "rpcs": [
-      "https://bsc-dataseed1.bnbchain.org",
-      "https://bsc-dataseed2.bnbchain.org",
-      "https://bsc-dataseed3.bnbchain.org",
-      "https://bsc-dataseed4.bnbchain.org",
-      "https://bsc-dataseed1.defibit.io",
-      "https://bsc-dataseed2.defibit.io",
-      "https://bsc-dataseed3.defibit.io",
-      "https://bsc-dataseed4.defibit.io",
-      "https://bsc-dataseed1.ninicoin.io",
-      "https://bsc-dataseed2.ninicoin.io",
-      "https://bsc-dataseed3.ninicoin.io",
-      "https://bsc-dataseed4.ninicoin.io",
-      "https://bsc.publicnode.com",
-      "https://bsc-dataseed.bnbchain.org/",
-      "https://bsc-dataseed1.defibit.io/",
-      "https://bsc-dataseed1.ninicoin.io/",
-      "https://bsc-dataseed2.defibit.io/",
-      "https://bsc-dataseed3.defibit.io/",
-      "https://bsc-dataseed4.defibit.io/",
-      "https://bsc-dataseed2.ninicoin.io/",
-      "https://bsc-dataseed3.ninicoin.io/",
-      "https://bsc-dataseed4.ninicoin.io/",
-      "https://bsc-dataseed1.bnbchain.org/",
-      "https://bsc-dataseed2.bnbchain.org/",
-      "https://bsc-dataseed3.bnbchain.org/",
-      "https://bsc-dataseed4.bnbchain.org/",
-      "https://bsc-dataseed6.dict.life/",
-      "https://rpc-bsc.48.club",
-      "https://koge-rpc-bsc.48.club",
-      "https://endpoints.omniatech.io/v1/bsc/mainnet/public",
-      "https://bsc-pokt.nodies.app",
-      "https://bsc-mainnet.nodereal.io/v1/64a9df0874fb4a93b9d0a3849de012d3",
-      "https://rpc.ankr.com/bsc",
-      "https://bscrpc.com",
-      "https://bsc.rpcgator.com/",
-      "https://binance.nodereal.io",
-      "https://bsc-mainnet.rpcfast.com?api_key=xbhWBI1Wkguk8SNMu1bvvLurPGLXmgwYeC4S6g2H7WdwFigZSmPWVZRxrskEQwIf",
-      "https://nodes.vefinetwork.org/smartchain",
-      "https://1rpc.io/bnb",
-      "https://bsc.rpc.blxrbdn.com/",
-      "https://bsc.blockpi.network/v1/rpc/public",
-      "https://bnb.api.onfinality.io/public",
-      "https://bsc.publicnode.com",
-      "https://bsc-mainnet.public.blastapi.io",
-      "https://bsc.meowrpc.com",
-      "https://api.zan.top/node/v1/bsc/mainnet/public",
-      "https://bsc.drpc.org",
-      "https://services.tokenview.io/vipapi/nodeservice/bsc?apikey=qVHq2o6jpaakcw3lRstl",
-      "https://binance.llamarpc.com"
-    ]
-  },
-  {
-    "chainId": "66",
-    "name": "OKXChain Mainnet",
-    "rpcs": [
-      "https://exchainrpc.okex.org",
-      "https://okc-mainnet.gateway.pokt.network/v1/lb/6275309bea1b320039c893ff",
-      "https://exchainrpc.okex.org",
-      "https://oktc-mainnet.public.blastapi.io",
-      "https://okt-chain.api.onfinality.io/public",
-      "https://1rpc.io/oktc"
-    ]
+    "name": "BNB Smart Chain Mainnet"
   },
   {
     "chainId": "97",
-    "name": "BNB Smart Chain Testnet",
-    "rpcs": [
-      "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
-      "https://data-seed-prebsc-2-s1.bnbchain.org:8545",
-      "https://data-seed-prebsc-1-s2.bnbchain.org:8545",
-      "https://data-seed-prebsc-2-s2.bnbchain.org:8545",
-      "https://data-seed-prebsc-1-s3.bnbchain.org:8545",
-      "https://data-seed-prebsc-2-s3.bnbchain.org:8545",
-      "https://bsc-testnet.publicnode.com",
-      "https://endpoints.omniatech.io/v1/bsc/testnet/public",
-      "https://bsctestapi.terminet.io/rpc",
-      "https://bsc-testnet.public.blastapi.io",
-      "https://bsc-testnet.publicnode.com",
-      "https://api.zan.top/node/v1/bsc/testnet/public",
-      "https://bsc-testnet.blockpi.network/v1/rpc/public"
-    ]
-  },
-  {
-    "chainId": "100",
-    "name": "Gnosis",
-    "rpcs": [
-      "https://rpc.gnosischain.com",
-      "https://rpc.gnosis.gateway.fm",
-      "https://rpc.ankr.com/gnosis",
-      "https://gnosischain-rpc.gateway.pokt.network",
-      "https://gnosis-mainnet.public.blastapi.io",
-      "https://gnosis.api.onfinality.io/public",
-      "https://gnosis.blockpi.network/v1/rpc/public",
-      "https://web3endpoints.com/gnosischain-mainnet",
-      "https://gnosis.oat.farm",
-      "https://gnosis.publicnode.com",
-      "https://rpc.gnosischain.com",
-      "https://xdai-archive.blockscout.com",
-      "https://gnosis-pokt.nodies.app",
-      "https://rpc.gnosis.gateway.fm",
-      "https://gnosis-mainnet.public.blastapi.io",
-      "https://rpc.ankr.com/gnosis",
-      "https://rpc.ap-southeast-1.gateway.fm/v4/gnosis/non-archival/mainnet",
-      "https://gnosis.blockpi.network/v1/rpc/public",
-      "https://gnosis.api.onfinality.io/public",
-      "https://gnosis.drpc.org",
-      "https://endpoints.omniatech.io/v1/gnosis/mainnet/public",
-      "https://gnosis.publicnode.com",
-      "https://1rpc.io/gnosis"
-    ]
+    "name": "BNB Smart Chain Testnet"
   },
   {
     "chainId": "137",
-    "name": "Polygon Mainnet",
-    "rpcs": [
-      "https://polygon-rpc.com/",
-      "https://rpc-mainnet.matic.network",
-      "https://matic-mainnet.chainstacklabs.com",
-      "https://rpc-mainnet.maticvigil.com",
-      "https://rpc-mainnet.matic.quiknode.pro",
-      "https://matic-mainnet-full-rpc.bwarelabs.com",
-      "https://polygon-bor.publicnode.com",
-      "https://polygon.gateway.tenderly.co",
-      "https://rpc-mainnet.maticvigil.com",
-      "https://endpoints.omniatech.io/v1/matic/mainnet/public",
-      "https://polygon-rpc.com",
-      "https://rpc-mainnet.matic.network",
-      "https://rpc-mainnet.matic.quiknode.pro",
-      "https://matic-mainnet-full-rpc.bwarelabs.com",
-      "https://matic-mainnet-archive-rpc.bwarelabs.com",
-      "https://polygon-pokt.nodies.app",
-      "https://rpc.ankr.com/polygon",
-      "https://polygon-mainnet.public.blastapi.io",
-      "https://polygonapi.terminet.io/rpc",
-      "https://1rpc.io/matic",
-      "https://polygon-mainnet.rpcfast.com?api_key=xbhWBI1Wkguk8SNMu1bvvLurPGLXmgwYeC4S6g2H7WdwFigZSmPWVZRxrskEQwIf",
-      "https://polygon-bor.publicnode.com",
-      "https://polygon-mainnet-public.unifra.io",
-      "https://polygon-mainnet.g.alchemy.com/v2/demo",
-      "https://polygon.blockpi.network/v1/rpc/public",
-      "https://polygon.api.onfinality.io/public",
-      "https://polygon.rpc.blxrbdn.com/",
-      "https://polygon.drpc.org",
-      "https://polygon.gateway.tenderly.co",
-      "https://gateway.tenderly.co/public/polygon",
-      "https://api.zan.top/node/v1/polygon/mainnet/public",
-      "https://polygon.meowrpc.com",
-      "https://getblock.io/nodes/matic/",
-      "https://polygon.llamarpc.com"
-    ]
+    "name": "Polygon Mainnet"
   },
   {
     "chainId": "250",
-    "name": "Fantom Opera",
-    "rpcs": [
-      "https://rpc.ftm.tools",
-      "https://fantom.publicnode.com",
-      "https://rpcapi.fantom.network",
-      "https://endpoints.omniatech.io/v1/fantom/mainnet/public",
-      "https://fantom-pokt.nodies.app",
-      "https://rpc.ftm.tools/",
-      "https://rpc.ankr.com/fantom",
-      "https://rpc.fantom.network",
-      "https://rpc2.fantom.network",
-      "https://rpc3.fantom.network",
-      "https://fantom-mainnet.public.blastapi.io",
-      "https://1rpc.io/ftm",
-      "https://fantom.blockpi.network/v1/rpc/public",
-      "https://fantom.publicnode.com",
-      "https://fantom.api.onfinality.io/public",
-      "https://rpc.fantom.gateway.fm",
-      "https://fantom.drpc.org"
-    ]
-  },
-  {
-    "chainId": "338",
-    "name": "Cronos Testnet",
-    "rpcs": ["https://evm-t3.cronos.org", "https://evm-t3.cronos.org/"]
+    "name": "Fantom Opera"
   },
   {
     "chainId": "369",
-    "name": "PulseChain",
-    "rpcs": [
-      "https://rpc.pulsechain.com",
-      "https://pulsechain.publicnode.com",
-      "https://rpc-pulsechain.g4mm4.io",
-      "https://rpc.pulsechain.com",
-      "https://pulse-s.projectpi.xyz",
-      "https://pulsechain.publicnode.com",
-      "https://rpc-pulsechain.g4mm4.io"
-    ]
+    "name": "PulseChain"
   },
   {
     "chainId": "420",
-    "name": "Optimism Goerli Testnet",
-    "rpcs": [
-      "https://goerli.optimism.io",
-      "https://optimism-goerli.publicnode.com",
-      "https://optimism-goerli.gateway.tenderly.co",
-      "https://endpoints.omniatech.io/v1/op/goerli/public",
-      "https://opt-goerli.g.alchemy.com/v2/demo",
-      "https://optimism-goerli.public.blastapi.io",
-      "https://rpc.goerli.optimism.gateway.fm",
-      "https://optimism-goerli.publicnode.com",
-      "https://optimism-goerli.blockpi.network/v1/rpc/public",
-      "https://api.zan.top/node/v1/opt/goerli/public",
-      "https://optimism-goerli.gateway.tenderly.co",
-      "https://gateway.tenderly.co/public/optimism-goerli"
-    ]
+    "name": "Optimism Goerli Testnet"
   },
   {
     "chainId": "599",
-    "name": "Metis Goerli Testnet",
-    "rpcs": ["https://goerli.gateway.metisdevops.link"]
+    "name": "Metis Goerli Testnet"
   },
   {
     "chainId": "943",
-    "name": "PulseChain Testnet v4",
-    "rpcs": [
-      "https://rpc.v4.testnet.pulsechain.com",
-      "https://pulsechain-testnet.publicnode.com",
-      "https://rpc-testnet-pulsechain.g4mm4.io",
-      "https://pulsetest-s.projectpi.xyz",
-      "https://pulsechain-testnet.publicnode.com"
-    ]
+    "name": "PulseChain Testnet v4"
   },
   {
     "chainId": "1001",
-    "name": "Klaytn Testnet Baobab",
-    "rpcs": [
-      "https://api.baobab.klaytn.net:8651",
-      "https://public-en-baobab.klaytn.net",
-      "https://klaytn-baobab-rpc.allthatnode.com:8551",
-      "https://rpc.ankr.com/klaytn_testnet",
-      "https://klaytn-baobab.blockpi.network/v1/rpc/public",
-      "https://klaytn.api.onfinality.io/public"
-    ]
+    "name": "Klaytn Testnet Baobab"
   },
   {
     "chainId": "1088",
-    "name": "Metis Andromeda Mainnet",
-    "rpcs": [
-      "https://andromeda.metis.io/?owner=1088",
-      "https://andromeda.metis.io/?owner=1088",
-      "https://metis-mainnet.public.blastapi.io",
-      "https://metis.api.onfinality.io/public",
-      "https://metis-pokt.nodies.app"
-    ]
+    "name": "Metis Andromeda Mainnet"
   },
   {
     "chainId": "1101",
-    "name": "Polygon zkEVM",
-    "rpcs": [
-      "https://zkevm-rpc.com",
-      "https://rpc.ankr.com/polygon_zkevm",
-      "https://rpc.polygon-zkevm.gateway.fm",
-      "https://1rpc.io/polygon/zkevm",
-      "https://polygon-zkevm.blockpi.network/v1/rpc/public",
-      "https://polygon-zkevm-mainnet.public.blastapi.io",
-      "https://api.zan.top/node/v1/polygonzkevm/mainnet/public",
-      "https://polygon-zkevm.drpc.org"
-    ]
+    "name": "Polygon zkEVM"
   },
   {
     "chainId": "4002",
-    "name": "Fantom Testnet",
-    "rpcs": [
-      "https://rpc.testnet.fantom.network",
-      "https://fantom-testnet.publicnode.com",
-      "https://rpc.testnet.fantom.network/",
-      "https://endpoints.omniatech.io/v1/fantom/testnet/public",
-      "https://rpc.ankr.com/fantom_testnet",
-      "https://fantom-testnet.public.blastapi.io",
-      "https://fantom-testnet.publicnode.com",
-      "https://fantom.api.onfinality.io/public"
-    ]
+    "name": "Fantom Testnet"
   },
   {
     "chainId": "5000",
-    "name": "Mantle",
-    "rpcs": [
-      "https://rpc.mantle.xyz",
-      "https://mantle.publicnode.com",
-      "https://mantle.publicnode.com",
-      "https://mantle-mainnet.public.blastapi.io",
-      "https://mantle.drpc.org",
-      "https://rpc.ankr.com/mantle",
-      "https://1rpc.io/mantle"
-    ]
+    "name": "Mantle"
   },
   {
     "chainId": "8217",
-    "name": "Klaytn Mainnet Cypress",
-    "rpcs": [
-      "https://public-node-api.klaytnapi.com/v1/cypress",
-      "https://public-en-cypress.klaytn.net",
-      "https://klaytn-mainnet-rpc.allthatnode.com:8551",
-      "https://rpc.ankr.com/klaytn ",
-      "https://klaytn.blockpi.network/v1/rpc/public",
-      "https://klaytn.api.onfinality.io/public",
-      "https://1rpc.io/klay",
-      "https://klaytn-pokt.nodies.app",
-      "https://klaytn.drpc.org"
-    ]
+    "name": "Klaytn Mainnet Cypress"
   },
   {
     "chainId": "8453",
-    "name": "Base",
-    "rpcs": [
-      "https://mainnet.base.org/",
-      "https://developer-access-mainnet.base.org/",
-      "https://base.gateway.tenderly.co",
-      "https://base.publicnode.com",
-      "https://mainnet.base.org",
-      "https://developer-access-mainnet.base.org",
-      "https://base-mainnet.diamondswap.org/rpc",
-      "https://base.blockpi.network/v1/rpc/public",
-      "https://1rpc.io/base",
-      "https://base-pokt.nodies.app",
-      "https://base.meowrpc.com",
-      "https://base-mainnet.public.blastapi.io",
-      "https://base.gateway.tenderly.co",
-      "https://gateway.tenderly.co/public/base",
-      "https://rpc.notadegen.com/base",
-      "https://base.publicnode.com",
-      "https://base.drpc.org",
-      "https://endpoints.omniatech.io/v1/base/mainnet/public",
-      "https://base.api.onfinality.io/public",
-      "https://base.llamarpc.com"
-    ]
-  },
-  {
-    "chainId": "10200",
-    "name": "Gnosis Chiado Testnet",
-    "rpcs": [
-      "https://rpc.chiadochain.net",
-      "https://rpc.chiado.gnosis.gateway.fm",
-      "https://gnosis-chiado.publicnode.com",
-      "https://rpc.chiadochain.net",
-      "https://rpc.chiado.gnosis.gateway.fm",
-      "https://gnosis-chiado.publicnode.com",
-      "https://1rpc.io/gnosis"
-    ]
+    "name": "Base"
   },
   {
     "chainId": "42161",
-    "name": "Arbitrum One",
-    "rpcs": [
-      "https://arb1.arbitrum.io/rpc",
-      "https://arbitrum-one.publicnode.com",
-      "https://arb1.arbitrum.io/rpc",
-      "https://rpc.ankr.com/arbitrum",
-      "https://1rpc.io/arb",
-      "https://arb-pokt.nodies.app",
-      "https://arbitrum.getblock.io/api_key/mainnet/",
-      "https://arb-mainnet.g.alchemy.com/v2/demo",
-      "https://arbitrum.blockpi.network/v1/rpc/public",
-      "https://arbitrum-one.public.blastapi.io",
-      "https://endpoints.omniatech.io/v1/arbitrum/one/public",
-      "https://arb-mainnet-public.unifra.io",
-      "https://arbitrum.api.onfinality.io/public",
-      "https://rpc.arb1.arbitrum.gateway.fm",
-      "https://arbitrum-one.publicnode.com",
-      "https://arbitrum.meowrpc.com",
-      "https://api.zan.top/node/v1/arb/one/public",
-      "https://arbitrum.drpc.org",
-      "https://arbitrum.llamarpc.com"
-    ]
+    "name": "Arbitrum One"
   },
   {
     "chainId": "43113",
-    "name": "Avalanche Fuji Testnet",
-    "rpcs": [
-      "https://api.avax-test.network/ext/bc/C/rpc",
-      "https://avalanche-fuji-c-chain.publicnode.com",
-      "https://api.avax-test.network/ext/bc/C/rpc",
-      "https://endpoints.omniatech.io/v1/avax/fuji/public",
-      "https://rpc.ankr.com/avalanche_fuji",
-      "https://rpc.ankr.com/avalanche_fuji-c",
-      "https://avalanchetestapi.terminet.io/ext/bc/C/rpc",
-      "https://ava-testnet.public.blastapi.io/ext/bc/C/rpc",
-      "https://avalanche-fuji-c-chain.publicnode.com",
-      "https://avalanche-fuji.blockpi.network/v1/rpc/public",
-      "https://api.zan.top/node/v1/avax/fuji/public/ext/bc/C/rpc"
-    ]
+    "name": "Avalanche Fuji Testnet"
   },
   {
     "chainId": "43114",
-    "name": "Avalanche C-Chain",
-    "rpcs": [
-      "https://api.avax.network/ext/bc/C/rpc",
-      "https://avalanche-c-chain.publicnode.com",
-      "https://api.avax.network/ext/bc/C/rpc",
-      "https://avalanche.public-rpc.com",
-      "https://rpc.ankr.com/avalanche",
-      "https://blastapi.io/public-api/avalanche",
-      "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc",
-      "https://avalancheapi.terminet.io/ext/bc/C/rpc",
-      "https://avalanche-c-chain.publicnode.com",
-      "https://1rpc.io/avax/c",
-      "https://avalanche.blockpi.network/v1/rpc/public",
-      "https://avax-pokt.nodies.app/ext/bc/C/rpc",
-      "https://avalanche.api.onfinality.io/public/ext/bc/C/rpc",
-      "https://endpoints.omniatech.io/v1/avax/mainnet/public",
-      "https://avax.meowrpc.com",
-      "https://api.zan.top/node/v1/avax/mainnet/public/ext/bc/C/rpc",
-      "https://avalanche.drpc.org"
-    ]
+    "name": "Avalanche C-Chain"
   },
   {
     "chainId": "59140",
-    "name": "Linea Testnet",
-    "rpcs": [
-      "https://rpc.goerli.linea.build",
-      "https://linea-goerli.blockpi.network/v1/rpc/public"
-    ]
+    "name": "Linea Testnet"
   },
   {
     "chainId": "59144",
-    "name": "Linea",
-    "rpcs": [
-      "https://rpc.linea.build",
-      "https://linea.blockpi.network/v1/rpc/public",
-      "https://1rpc.io/linea",
-      "https://linea.drpc.org"
-    ]
+    "name": "Linea"
   },
   {
     "chainId": "80001",
-    "name": "Mumbai",
-    "rpcs": [
-      "https://rpc-mumbai.maticvigil.com",
-      "https://polygon-mumbai-bor.publicnode.com",
-      "https://polygon-mumbai.gateway.tenderly.co",
-      "https://rpc-mumbai.maticvigil.com",
-      "https://endpoints.omniatech.io/v1/matic/mumbai/public",
-      "https://rpc.ankr.com/polygon_mumbai",
-      "https://polygontestapi.terminet.io/rpc",
-      "https://polygon-testnet.public.blastapi.io",
-      "https://polygon-mumbai.g.alchemy.com/v2/demo",
-      "https://polygon-mumbai.blockpi.network/v1/rpc/public",
-      "https://polygon-mumbai-bor.publicnode.com",
-      "https://polygon-mumbai-pokt.nodies.app",
-      "https://polygon-mumbai.gateway.tenderly.co",
-      "https://gateway.tenderly.co/public/polygon-mumbai",
-      "https://api.zan.top/node/v1/polygon/mumbai/public"
-    ]
+    "name": "Mumbai"
   },
   {
     "chainId": "84531",
-    "name": "Base Goerli Testnet",
-    "rpcs": [
-      "https://goerli.base.org",
-      "https://base-goerli.gateway.tenderly.co",
-      "https://base-goerli.publicnode.com",
-      "https://base-goerli.diamondswap.org/rpc",
-      "https://base-goerli.public.blastapi.io",
-      "https://1rpc.io/base-goerli",
-      "https://base-goerli.blockpi.network/v1/rpc/public",
-      "https://base-goerli.gateway.tenderly.co",
-      "https://gateway.tenderly.co/public/base-goerli",
-      "https://base-goerli.publicnode.com",
-      "https://endpoints.omniatech.io/v1/base/goerli/public"
-    ]
+    "name": "Base Goerli Testnet"
   },
   {
     "chainId": "421613",
-    "name": "Arbitrum Goerli",
-    "rpcs": [
-      "https://goerli-rollup.arbitrum.io/rpc",
-      "https://arbitrum-goerli.publicnode.com",
-      "https://endpoints.omniatech.io/v1/arbitrum/goerli/public",
-      "https://arb-goerli.g.alchemy.com/v2/demo",
-      "https://arbitrum-goerli.public.blastapi.io",
-      "https://rpc.goerli.arbitrum.gateway.fm",
-      "https://arbitrum-goerli.publicnode.com",
-      "https://arbitrum-goerli.blockpi.network/v1/rpc/public",
-      "https://api.zan.top/node/v1/arb/goerli/public"
-    ]
+    "name": "Arbitrum Goerli"
   }
 ]
