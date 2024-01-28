@@ -8,7 +8,7 @@ export const env = zennv({
     ENV: z.enum(['production', 'development']).default('production'),
     HOST: z.string().default('https://rpc.polysplit.cloud'),
 
-    RESPONSE_TIMEOUT_MS: z.string().default('5000').transform(Number),
+    RESPONSE_TIMEOUT_MS: z.string().default('1000').transform(Number),
     RESPONSE_MAX_RETRIES: z.string().default('1').transform(Number),
     RESPONSE_AMOUNT: z.string().default('1').transform(Number),
 
