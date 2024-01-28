@@ -67,14 +67,14 @@ export async function postChainControllerV1(req: Request, res: Response) {
   }
 
   for (let j = 1; j < 5; j++) {
-    const responseTimeMs = evmService.maxResponseTimeMs
+    const responseTimeMs = evmService.maxResponseTimeMs * j
     let attempts = 0
     for (const url of rpcs) {
       attempts++
       const response = await evmService.rpcRequest(
         url,
         req.body,
-        responseTimeMs * j
+        responseTimeMs
       )
       if (response.err) {
         if (response.val.type === 'proxy') {
