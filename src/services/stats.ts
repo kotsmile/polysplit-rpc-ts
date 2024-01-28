@@ -43,7 +43,7 @@ const STATS_KEY = 'stats'
 const UPDATE_BATCH = 1000
 
 export class StatsService {
-  constructor(private storageRepo: StorageRepo, private cacheRepo: CacheRepo) {}
+  constructor(private storageRepo: StorageRepo, private cacheRepo: CacheRepo) { }
 
   async insertStats(
     stats: Omit<Stats, 'id' | 'created_at'>
@@ -85,6 +85,7 @@ export class StatsService {
       return Ok(0)
     }
     if (stats.val.val.length < UPDATE_BATCH) {
+      logger.info('record lenght', stats.val.val.length)
       return Ok(0)
     }
 
