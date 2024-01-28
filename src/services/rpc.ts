@@ -16,7 +16,7 @@ export class RpcService {
   constructor(
     private cacheRepo: CacheRepo,
     private chainlistClient: ChainlistClient
-  ) {}
+  ) { }
 
   getRpcKey(chainId: string): string {
     return `${this.RPC_KEY}.${chainId}`
@@ -44,6 +44,12 @@ export class RpcService {
     }
 
     return Some(chainConfig)
+  }
+
+  async fetchAllRpcs(): Promise<Result<Record<string, string[]>, string>> {
+    return (await this.chainlistClient.fetchRpcs()).mapErr(
+      (err) => `failed to fetch all rpcs: ${err}`
+    )
   }
 
   async fetchChainRpcs(chainId: string): Promise<Result<string[], string>> {

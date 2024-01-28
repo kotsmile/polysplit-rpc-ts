@@ -24,11 +24,14 @@ async function batchPromiseAll(
 
 export async function rpcFeedCron() {
   logger.info('Collecting RPC Feed')
+  const allRpcs = await rpcService.fetchAllRpcs()
+  if (allRpcs.err) {
+    logger.error(`no rpcs was found: ${allRpcs.val}`)
+    return false
+  }
 
   for (const chainId of env.SUPPORTED_CHAIN_IDS) {
-    const rpcs = (await rpcService.fetchChainRpcs(chainId)).expect(
-      `no rpcs for chainId: ${chainId}`
-    )
+    const rpcs = allRpcs.val[chainId] ?? []
 
     if (rpcs.length === 0) {
       logger.warn(`Skip ${chainId} zero length rpcs`)

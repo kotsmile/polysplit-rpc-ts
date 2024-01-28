@@ -24,7 +24,28 @@ proxyService.initProxies().then((val) => {
 async function initRpcs() {
   logger.info('initiating rpcs')
 
+  // add all rpcs
+  const allRpcs = await rpcService.fetchAllRpcs()
+  if (allRpcs.err) {
+    logger.error(`no rpcs was fetched: ${allRpcs.val}`)
+    return
+  }
+
   for (const chainId of env.SUPPORTED_CHAIN_IDS) {
+    const rpcs = allRpcs.val[chainId] ?? []
+
+    const response = await rpcService.setRpcs(chainId, rpcs)
+    if (response.err) {
+      logger.warn(`failed to set rpcs for chainId ${chainId}`)
+      continue
+    }
+  }
+  logger.debug('add optimistic rpcs')
+
+  // set popular rpc
+
+  for (const chainId of env.SUPPORTED_CHAIN_IDS) {
+    // TODO(@kotsmile): make get popular function target all chains to speed up
     const rpc = await statsService.getPopularRpcForChainId(chainId)
     if (rpc.err) {
       logger.warn(
@@ -50,11 +71,11 @@ async function initRpcs() {
 }
 
 async function main() {
-  await initRpcs()
-
   const { notFoundHandler } = await attachRouting(config, routing)
   expressApp.use(notFoundHandler) // optional
   expressApp.listen(env.PORT)
+
+  await initRpcs()
 }
 
 main().catch(logger.error)

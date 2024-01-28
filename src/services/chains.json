@@ -178,11 +178,6 @@
     ]
   },
   {
-    "chainId": "65",
-    "name": "OKExChain Testnet",
-    "rpcs": ["https://exchaintestrpc.okex.org"]
-  },
-  {
     "chainId": "66",
     "name": "OKXChain Mainnet",
     "rpcs": [
@@ -308,7 +303,10 @@
   {
     "chainId": "338",
     "name": "Cronos Testnet",
-    "rpcs": ["https://evm-t3.cronos.org", "https://evm-t3.cronos.org/"]
+    "rpcs": [
+      "https://evm-t3.cronos.org",
+      "https://evm-t3.cronos.org/"
+    ]
   },
   {
     "chainId": "369",
@@ -344,7 +342,9 @@
   {
     "chainId": "599",
     "name": "Metis Goerli Testnet",
-    "rpcs": ["https://goerli.gateway.metisdevops.link"]
+    "rpcs": [
+      "https://goerli.gateway.metisdevops.link"
+    ]
   },
   {
     "chainId": "943",
@@ -420,11 +420,6 @@
       "https://rpc.ankr.com/mantle",
       "https://1rpc.io/mantle"
     ]
-  },
-  {
-    "chainId": "5001",
-    "name": "Mantle Testnet",
-    "rpcs": ["https://rpc.testnet.mantle.xyz"]
   },
   {
     "chainId": "8217",
@@ -506,17 +501,6 @@
     ]
   },
   {
-    "chainId": "42220",
-    "name": "Celo Mainnet",
-    "rpcs": [
-      "https://forno.celo.org",
-      "https://forno.celo.org",
-      "https://rpc.ankr.com/celo",
-      "https://1rpc.io/celo",
-      "https://celo.api.onfinality.io/public"
-    ]
-  },
-  {
     "chainId": "43113",
     "name": "Avalanche Fuji Testnet",
     "rpcs": [
@@ -557,11 +541,6 @@
     ]
   },
   {
-    "chainId": "44787",
-    "name": "Celo Alfajores Testnet",
-    "rpcs": ["https://alfajores-forno.celo-testnet.org"]
-  },
-  {
     "chainId": "59140",
     "name": "Linea Testnet",
     "rpcs": [
@@ -578,11 +557,6 @@
       "https://1rpc.io/linea",
       "https://linea.drpc.org"
     ]
-  },
-  {
-    "chainId": "62320",
-    "name": "Celo Baklava Testnet",
-    "rpcs": ["https://baklava-forno.celo-testnet.org"]
   },
   {
     "chainId": "80001",
