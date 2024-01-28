@@ -28,7 +28,7 @@ export class ChainlistClient {
       .filter((line) => !line.trim().startsWith('trackingDetails:'))
       .filter((line) => !line.trim().startsWith('tracking:'))
 
-    let extraRpcs: Record<string, unknown> = {}
+    const extraRpcs: Record<string, unknown> = {}
     // TODO(@kotsmile) fix eval to risky
     eval(
       targetLines
@@ -40,8 +40,7 @@ export class ChainlistClient {
 
     for (const chainId of Object.keys(extraRpcs)) {
       const chain = extraRpcs[chainId]
-      ///@ts-ignore
-      if ('rpcs' in chain) {
+      if (typeof chain === 'object' && chain !== null && 'rpcs' in chain) {
         const rpcs = chain.rpcs as (string | { url: string })[]
         for (const rpc of rpcs) {
           const url = (() => {
