@@ -12,4 +12,4 @@ export async function statsSavingCron(): Promise<boolean> {
   return true
 }
 
-createAndRunCronJob('0 */5 * * *', statsSavingCron)
+createAndRunCronJob('*/5 * * * *', statsSavingCron)
