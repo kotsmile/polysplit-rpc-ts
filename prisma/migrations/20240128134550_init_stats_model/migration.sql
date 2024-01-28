@@ -12,7 +12,7 @@ CREATE TABLE "Stats" (
     "isLanding" BOOLEAN NOT NULL,
     "attempts" INTEGER NOT NULL,
     "errorMessage" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Stats_pkey" PRIMARY KEY ("id")
 );

@@ -30,5 +30,5 @@ model Stats {
   attempts       Int
   errorMessage   String?
 
-  created_at DateTime @default(now())
+  created_at DateTime
 }

@@ -43,8 +43,8 @@ export class StatsService {
 
   async insertStats(
     stats: Omit<Stats, 'created_at' | 'id'>
-  ): Promise < Result < void, string >> {
-    if(env.ENV === 'development') {
+  ): Promise<Result<void, string>> {
+    if (env.ENV === 'development') {
       return Ok(undefined)
     }
 
