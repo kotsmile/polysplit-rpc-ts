@@ -3,14 +3,19 @@ import { defaultEndpointsFactory } from 'express-zod-api'
 import createHttpError from 'http-errors'
 
 import { statsService } from '@/impl'
-import { StatsSharedSchema } from '@/services/stats'
+import { StatsPerChainSchema, StatsSharedSchema } from '@/services/stats'
 
 export default defaultEndpointsFactory.build({
   method: 'get',
-  input: z.object({}),
-  output: StatsSharedSchema,
-  async handler() {
-    const stats = await statsService.getStatisticOfUsageShared()
+  input: z.object({
+    chainId: z.string(),
+  }),
+  output: StatsPerChainSchema,
+
+  async handler({ input }) {
+    const stats = await statsService.getStatisticOfUsageForChainId(
+      input.chainId
+    )
     if (stats.err) {
       throw createHttpError.InternalServerError('Internal error')
     }

@@ -1,30 +1,30 @@
 openapi: 3.1.0
 info:
   title: Polysplit RPC
-  version: '1.0'
+  version: "1.0"
 paths:
   /status:
     get:
       operationId: GetStatus
       responses:
-        '200':
+        "200":
           description: GET /status Positive response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetStatusPositiveResponse'
+                $ref: "#/components/schemas/GetStatusPositiveResponse"
               examples:
                 example1:
                   value:
                     status: success
                     data:
                       status: healthy
-        '400':
+        "400":
           description: GET /status Negative response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetStatusNegativeResponse'
+                $ref: "#/components/schemas/GetStatusNegativeResponse"
               examples:
                 example1:
                   value:
@@ -34,28 +34,57 @@ paths:
       summary: Status of server
       tags:
         - Status
-  /v1/stats:
+  /v1/stats/all:
     get:
-      operationId: GetV1Stats
+      operationId: GetV1StatsAll
       responses:
-        '200':
-          description: GET /v1/stats Positive response
+        "200":
+          description: GET /v1/stats/all Positive response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetV1StatsPositiveResponse'
-        '400':
-          description: GET /v1/stats Negative response
+                $ref: "#/components/schemas/GetV1StatsAllPositiveResponse"
+        "400":
+          description: GET /v1/stats/all Negative response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetV1StatsNegativeResponse'
+                $ref: "#/components/schemas/GetV1StatsAllNegativeResponse"
               examples:
                 example1:
                   value:
                     status: error
                     error:
                       message: Sample error message
+  /v1/stats/{chainId}:
+    get:
+      operationId: GetV1StatsChainId
+      responses:
+        "200":
+          description: GET /v1/stats/:chainId Positive response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetV1StatsChainIdPositiveResponse"
+        "400":
+          description: GET /v1/stats/:chainId Negative response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetV1StatsChainIdNegativeResponse"
+              examples:
+                example1:
+                  value:
+                    status: error
+                    error:
+                      message: Sample error message
+      parameters:
+        - name: chainId
+          in: path
+          required: true
+          description: GET /v1/stats/:chainId Parameter
+          schema:
+            $ref: "#/components/schemas/GetV1StatsChainIdParameterChainId"
 components:
   schemas:
     GetStatusPositiveResponse:
@@ -94,7 +123,7 @@ components:
       required:
         - status
         - error
-    GetV1StatsPositiveResponse:
+    GetV1StatsAllPositiveResponse:
       type: object
       properties:
         status:
@@ -104,120 +133,141 @@ components:
         data:
           type: object
           properties:
-            shared:
-              type: object
-              properties:
-                countFromLanding:
-                  type: integer
-                  format: int64
-                  minimum: -9007199254740991
-                  maximum: 9007199254740991
-                countFromLanding24:
-                  type: integer
-                  format: int64
-                  minimum: -9007199254740991
-                  maximum: 9007199254740991
-              required:
-                - countFromLanding
-                - countFromLanding24
-            perChainId:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  popularRpc:
-                    type: string
-                  uniqueUsers:
-                    type: integer
-                    format: int64
-                    minimum: -9007199254740991
-                    maximum: 9007199254740991
-                  responseTimeMs:
-                    type: object
-                    properties:
-                      avg:
-                        type: number
-                        format: double
-                        minimum: -900719254740991
-                        maximum: 1.7976931348623157e+308
-                      min:
-                        type: number
-                        format: double
-                        minimum: -900719254740991
-                        maximum: 1.7976931348623157e+308
-                      max:
-                        type: number
-                        format: double
-                        minimum: -900719254740991
-                        maximum: 1.7976931348623157e+308
-                    required:
-                      - avg
-                      - min
-                      - max
-                  topRpcs:
-                    type: array
-                    items:
-                      type: string
-                  errorCount:
-                    type: integer
-                    format: int64
-                    minimum: -9007199254740991
-                    maximum: 9007199254740991
-                  errorCount24:
-                    type: integer
-                    format: int64
-                    minimum: -9007199254740991
-                    maximum: 9007199254740991
-                  okCount:
-                    type: integer
-                    format: int64
-                    minimum: -9007199254740991
-                    maximum: 9007199254740991
-                  okCount24:
-                    type: integer
-                    format: int64
-                    minimum: -9007199254740991
-                    maximum: 9007199254740991
-                  totalCount:
-                    type: integer
-                    format: int64
-                    minimum: -9007199254740991
-                    maximum: 9007199254740991
-                  totalCount24:
-                    type: integer
-                    format: int64
-                    minimum: -9007199254740991
-                    maximum: 9007199254740991
-                  avgAttempts:
-                    type: number
-                    format: double
-                    minimum: -900719254740991
-                    maximum: 1.7976931348623157e+308
-                  avgAttempts24:
-                    type: number
-                    format: double
-                    minimum: -900719254740991
-                    maximum: 1.7976931348623157e+308
-                required:
-                  - popularRpc
-                  - uniqueUsers
-                  - responseTimeMs
-                  - topRpcs
-                  - errorCount
-                  - errorCount24
-                  - okCount
-                  - okCount24
-                  - totalCount
-                  - totalCount24
-                  - avgAttempts
-                  - avgAttempts24
+            countFromLanding:
+              type: integer
+              format: int64
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+            countFromLanding24:
+              type: integer
+              format: int64
+              minimum: -9007199254740991
+              maximum: 9007199254740991
           required:
-            - shared
-            - perChainId
+            - countFromLanding
+            - countFromLanding24
       required:
         - status
         - data
-    GetV1StatsNegativeResponse:
+    GetV1StatsAllNegativeResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - error
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+          required:
+            - message
+      required:
+        - status
+        - error
+    GetV1StatsChainIdParameterChainId:
+      type: string
+    GetV1StatsChainIdPositiveResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+        data:
+          type: object
+          properties:
+            popularRpc:
+              type: string
+            uniqueUsers:
+              type: integer
+              format: int64
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+            responseTimeMs:
+              type: object
+              properties:
+                avg:
+                  type: number
+                  format: double
+                  minimum: -1.7976931348623157e+308
+                  maximum: 1.7976931348623157e+308
+                min:
+                  type: number
+                  format: double
+                  minimum: -1.7976931348623157e+308
+                  maximum: 1.7976931348623157e+308
+                max:
+                  type: number
+                  format: double
+                  minimum: -1.7976931348623157e+308
+                  maximum: 1.7976931348623157e+308
+              required:
+                - avg
+                - min
+                - max
+            topRpcs:
+              type: array
+              items:
+                type: string
+            errorCount:
+              type: integer
+              format: int64
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+            errorCount24:
+              type: integer
+              format: int64
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+            okCount:
+              type: integer
+              format: int64
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+            okCount24:
+              type: integer
+              format: int64
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+            totalCount:
+              type: integer
+              format: int64
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+            totalCount24:
+              type: integer
+              format: int64
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+            avgAttempts:
+              type: number
+              format: double
+              minimum: -1.7976931348623157e+308
+              maximum: 1.7976931348623157e+308
+            avgAttempts24:
+              type: number
+              format: double
+              minimum: -1.7976931348623157e+308
+              maximum: 1.7976931348623157e+308
+          required:
+            - popularRpc
+            - uniqueUsers
+            - responseTimeMs
+            - topRpcs
+            - errorCount
+            - errorCount24
+            - okCount
+            - okCount24
+            - totalCount
+            - totalCount24
+            - avgAttempts
+            - avgAttempts24
+      required:
+        - status
+        - data
+    GetV1StatsChainIdNegativeResponse:
       type: object
       properties:
         status:

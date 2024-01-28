@@ -1,8 +1,8 @@
 import { Result, Option, Ok } from 'ts-results'
+import { z } from 'zod'
 
 import type { StorageRepo, Stats } from '@/internal/repo/storage'
 import { env } from '@/env'
-import { z } from 'zod'
 
 export const StatsPerChainSchema = z.object({
   popularRpc: z.string(),
@@ -33,7 +33,7 @@ export const StatsSharedSchema = z.object({
 type StatsShared = z.infer<typeof StatsSharedSchema>
 
 export class StatsService {
-  constructor(private storageRepo: StorageRepo) {}
+  constructor(private storageRepo: StorageRepo) { }
 
   async insertStats(stats: Omit<Stats, 'date'>): Promise<Result<void, string>> {
     if (env.ENV === 'development') {
@@ -54,150 +54,145 @@ export class StatsService {
     ).mapErr((err) => `failed to insert into stats collection: ${err}`)
   }
 
-  async getStatisticOfUsage(): Promise<
-    Result<
-      { shared: StatsShared; perChainId: Record<string, StatsPerChain> },
-      string
-    >
-  > {
+  async getStatisticOfUsageShared(): Promise<Result<StatsShared, string>> {
+    const countFromLanding =
+      await this.storageRepo.getTotalRecordsWithIsLandingStats()
+    if (countFromLanding.err) {
+      return countFromLanding
+    }
+
+    const countFromLanding24 =
+      await this.storageRepo.getTotalRecordsWithIsLandingLast24HoursStats()
+    if (countFromLanding24.err) {
+      return countFromLanding24
+    }
+
+    return Ok({
+      countFromLanding: countFromLanding.val,
+      countFromLanding24: countFromLanding24.val,
+    })
+  }
+
+  async getStatisticOfUsageForChainId(
+    chainId: string
+  ): Promise<Result<StatsPerChain, string>> {
     return await this.storageRepo.withTx(async (session) => {
-      const countFromLanding =
-        await this.storageRepo.getTotalRecordsWithIsLandingStats(session)
-      if (countFromLanding.err) {
-        return countFromLanding
+      const popularRpc = await this.storageRepo.getPopularRpcForChainIdStats(
+        chainId,
+        session
+      )
+      if (popularRpc.err) {
+        return popularRpc
       }
 
-      const countFromLanding24 =
-        await this.storageRepo.getTotalRecordsWithIsLandingLast24HoursStats(
-          session
-        )
-      if (countFromLanding24.err) {
-        return countFromLanding24
+      const uniqueUsers = await this.storageRepo.getUniqueUsersForChainIdStats(
+        chainId,
+        session
+      )
+      if (uniqueUsers.err) {
+        return uniqueUsers
       }
 
-      const perChainId: Record<string, StatsPerChain> = {}
-      for (const chainId of env.SUPPORTED_CHAIN_IDS) {
-        const popularRpc = await this.storageRepo.getPopularRpcForChainIdStats(
+      const responseTimeMs =
+        await this.storageRepo.getResponseTimeStatsForChainIdStats(
           chainId,
           session
         )
-        if (popularRpc.err) {
-          return popularRpc
-        }
+      if (responseTimeMs.err) {
+        return responseTimeMs
+      }
 
-        const uniqueUsers =
-          await this.storageRepo.getUniqueUsersForChainIdStats(chainId, session)
-        if (uniqueUsers.err) {
-          return uniqueUsers
-        }
+      const topRpcs = await this.storageRepo.getTopChoosenRpcForChainIdStats(
+        chainId,
+        session
+      )
+      if (topRpcs.err) {
+        return topRpcs
+      }
 
-        const responseTimeMs =
-          await this.storageRepo.getResponseTimeStatsForChainIdStats(
-            chainId,
-            session
-          )
-        if (responseTimeMs.err) {
-          return responseTimeMs
-        }
-
-        const topRpcs = await this.storageRepo.getTopChoosenRpcForChainIdStats(
+      const errorCount =
+        await this.storageRepo.getErrorRecordsCountForChainIdStats(
           chainId,
           session
         )
-        if (topRpcs.err) {
-          return topRpcs
-        }
+      if (errorCount.err) {
+        return errorCount
+      }
 
-        const errorCount =
-          await this.storageRepo.getErrorRecordsCountForChainIdStats(
-            chainId,
-            session
-          )
-        if (errorCount.err) {
-          return errorCount
-        }
-
-        const errorCount24 =
-          await this.storageRepo.getErrorRecordsCountLast24HoursForChainIdStats(
-            chainId,
-            session
-          )
-        if (errorCount24.err) {
-          return errorCount24
-        }
-
-        const okCount = await this.storageRepo.getOkRecordsCountForChainIdStats(
+      const errorCount24 =
+        await this.storageRepo.getErrorRecordsCountLast24HoursForChainIdStats(
           chainId,
           session
         )
-        if (okCount.err) {
-          return okCount
-        }
+      if (errorCount24.err) {
+        return errorCount24
+      }
 
-        const okCount24 =
-          await this.storageRepo.getOkRecordsCountLast24HoursForChainIdStats(
-            chainId,
-            session
-          )
-        if (okCount24.err) {
-          return okCount24
-        }
+      const okCount = await this.storageRepo.getOkRecordsCountForChainIdStats(
+        chainId,
+        session
+      )
+      if (okCount.err) {
+        return okCount
+      }
 
-        const totalCount =
-          await this.storageRepo.getTotalRecordsCountForChainIdStats(
-            chainId,
-            session
-          )
-        if (totalCount.err) {
-          return totalCount
-        }
+      const okCount24 =
+        await this.storageRepo.getOkRecordsCountLast24HoursForChainIdStats(
+          chainId,
+          session
+        )
+      if (okCount24.err) {
+        return okCount24
+      }
 
-        const totalCount24 =
-          await this.storageRepo.getTotalRecordsCountLast24HoursForChainIdStats(
-            chainId,
-            session
-          )
-        if (totalCount24.err) {
-          return totalCount24
-        }
+      const totalCount =
+        await this.storageRepo.getTotalRecordsCountForChainIdStats(
+          chainId,
+          session
+        )
+      if (totalCount.err) {
+        return totalCount
+      }
 
-        const avgAttempts =
-          await this.storageRepo.getAvgAttemptsForChainIdStats(chainId, session)
-        if (avgAttempts.err) {
-          return avgAttempts
-        }
+      const totalCount24 =
+        await this.storageRepo.getTotalRecordsCountLast24HoursForChainIdStats(
+          chainId,
+          session
+        )
+      if (totalCount24.err) {
+        return totalCount24
+      }
 
-        const avgAttempts24 =
-          await this.storageRepo.getAvgAttemptsLast24HoursForChainIdStats(
-            chainId,
-            session
-          )
-        if (avgAttempts24.err) {
-          return avgAttempts24
-        }
+      const avgAttempts = await this.storageRepo.getAvgAttemptsForChainIdStats(
+        chainId,
+        session
+      )
+      if (avgAttempts.err) {
+        return avgAttempts
+      }
 
-        perChainId[chainId] = {
-          popularRpc: popularRpc.val.unwrapOr(''),
-          uniqueUsers: uniqueUsers.val,
-          responseTimeMs: responseTimeMs.val,
-          topRpcs: topRpcs.val,
-          errorCount: errorCount.val,
-          errorCount24: errorCount24.val,
-          okCount: okCount.val,
-          okCount24: okCount24.val,
-          totalCount: totalCount.val,
-          totalCount24: totalCount24.val,
-          avgAttempts: avgAttempts.val,
-          avgAttempts24: avgAttempts24.val,
-        }
+      const avgAttempts24 =
+        await this.storageRepo.getAvgAttemptsLast24HoursForChainIdStats(
+          chainId,
+          session
+        )
+      if (avgAttempts24.err) {
+        return avgAttempts24
       }
 
       return Ok({
-        shared: {
-          countFromLanding: countFromLanding.val,
-          countFromLanding24: countFromLanding24.val,
-        },
-        perChainId,
+        popularRpc: popularRpc.val.unwrapOr(''),
+        uniqueUsers: uniqueUsers.val,
+        responseTimeMs: responseTimeMs.val,
+        topRpcs: topRpcs.val,
+        errorCount: errorCount.val,
+        errorCount24: errorCount24.val,
+        okCount: okCount.val,
+        okCount24: okCount24.val,
+        totalCount: totalCount.val,
+        totalCount24: totalCount24.val,
+        avgAttempts: avgAttempts.val,
+        avgAttempts24: avgAttempts24.val,
       })
     })
   }
