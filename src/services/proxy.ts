@@ -117,6 +117,8 @@ export class ProxyService {
       return Err(`failed to save proxies: ${response.val}`)
     }
 
+    await this.rotateProxy()
+
     return Ok(undefined)
   }
 }

@@ -10,7 +10,7 @@ import {
   timePromise,
 } from '@/utils'
 
-const TEST_BATCH = 5
+const TEST_BATCH = 10
 
 async function batchPromiseAll(
   batchSize: number,

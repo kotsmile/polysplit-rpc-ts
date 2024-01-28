@@ -4,7 +4,7 @@ import type { ProxyService } from '@/services/proxy'
 
 import { safeWithError } from '@/utils'
 
-export type EvmErrorType = 'timeout' | 'internal'
+export type EvmErrorType = 'timeout' | 'internal' | 'proxy'
 export type EvmError = {
   type: EvmErrorType
   message: string
@@ -25,6 +25,15 @@ export class EvmService {
     )
 
     if (response.err) {
+      if (
+        'status' in response.val &&
+        (response.val.status === 502 || response.val.status === 504)
+      ) {
+        return Err({
+          type: 'proxy',
+          message: 'Proxy problem',
+        })
+      }
       if ('code' in response.val && response.val.code === 'ECONNABORTED') {
         return Err({
           type: 'timeout',
