@@ -89,9 +89,20 @@ async function initRpcs() {
 async function main() {
   const { notFoundHandler } = await attachRouting(config, routing)
   expressApp.use(notFoundHandler) // optional
-  expressApp.listen(env.PORT).close(async () => {
-    await statsSavingCron()
-    await storageRepo.disconnect()
+
+  const server = expressApp.listen(env.PORT)
+
+  process.on('SIGTERM', () => {
+    server.close(async () => {
+      await statsSavingCron()
+      await storageRepo.disconnect()
+    })
+  })
+  process.on('SIGKILL', () => {
+    server.close(async () => {
+      await statsSavingCron()
+      await storageRepo.disconnect()
+    })
   })
 
   await initRpcs()
