@@ -31,10 +31,11 @@ export class StorageRepo {
   }
 
   async withTx<T>(
-    callback: (session: StorageSession) => Promise<Result<T, string>>
+    callback: (session: StorageSession) => Promise<Result<T, string>>,
+    opts?: { maxWait: number; timeout?: number }
   ): Promise<Result<T, string>> {
     const result = await safe(
-      this.client.$transaction(async (tx) => await callback(tx))
+      this.client.$transaction(async (tx) => await callback(tx), opts)
     )
     if (result.err) {
       return Err(`failed to execute transaction: ${result.val}`)
@@ -323,6 +324,7 @@ export class StorageRepo {
           chainId,
           status: StatsStatus.OK,
           created_at: { gte: this.getDate24HoursAgo() },
+          attempts: { not: -1 },
         },
         _avg: {
           attempts: true,
@@ -342,6 +344,7 @@ export class StorageRepo {
         where: {
           chainId,
           status: StatsStatus.OK,
+          attempts: { not: -1 },
         },
         _avg: {
           attempts: true,

@@ -4,6 +4,7 @@ import createHttpError from 'http-errors'
 
 import { statsService } from '@/impl'
 import { StatsPerChainSchema } from '@/services/stats'
+import { logger } from '@/utils'
 
 export default defaultEndpointsFactory.build({
   method: 'get',
@@ -16,6 +17,9 @@ export default defaultEndpointsFactory.build({
       input.chainId
     )
     if (stats.err) {
+      logger.error(
+        `failed to get stats for chainId ${input.chainId}: ${stats.val}`
+      )
       throw createHttpError.InternalServerError('Internal error')
     }
 

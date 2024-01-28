@@ -39,10 +39,10 @@ export const StatsSharedSchema = z.object({
 type StatsShared = z.infer<typeof StatsSharedSchema>
 
 export class StatsService {
-  constructor(private storageRepo: StorageRepo) {}
+  constructor(private storageRepo: StorageRepo) { }
 
   async insertStats(
-    stats: Omit<Stats, 'created_at' | 'id'>
+    stats: Omit<Stats, 'id' | 'created_at'>
   ): Promise<Result<void, string>> {
     if (env.ENV === 'development') {
       return Ok(undefined)
@@ -84,134 +84,111 @@ export class StatsService {
   async getStatisticOfUsageForChainId(
     chainId: string
   ): Promise<Result<StatsPerChain, string>> {
-    return await this.storageRepo.withTx(async (session) => {
-      const popularRpc = await this.storageRepo.getPopularRpcForChainIdStats(
-        chainId,
-        session
+    const popularRpc = await this.storageRepo.getPopularRpcForChainIdStats(
+      chainId
+    )
+    if (popularRpc.err) {
+      return popularRpc
+    }
+
+    const uniqueUsers = await this.storageRepo.getUniqueUsersForChainIdStats(
+      chainId
+    )
+    if (uniqueUsers.err) {
+      return uniqueUsers
+    }
+
+    const responseTimeMs =
+      await this.storageRepo.getResponseTimeStatsForChainIdStats(chainId)
+    if (responseTimeMs.err) {
+      return responseTimeMs
+    }
+
+    const responseTimeMs24 =
+      await this.storageRepo.getResponseTimeStatsLast24HoursForChainIdStats(
+        chainId
       )
-      if (popularRpc.err) {
-        return popularRpc
-      }
+    if (responseTimeMs24.err) {
+      return responseTimeMs24
+    }
 
-      const uniqueUsers = await this.storageRepo.getUniqueUsersForChainIdStats(
-        chainId,
-        session
+    const topRpcs = await this.storageRepo.getTopChoosenRpcForChainIdStats(
+      chainId
+    )
+    if (topRpcs.err) {
+      return topRpcs
+    }
+
+    const errorCount =
+      await this.storageRepo.getErrorRecordsCountForChainIdStats(chainId)
+    if (errorCount.err) {
+      return errorCount
+    }
+
+    const errorCount24 =
+      await this.storageRepo.getErrorRecordsCountLast24HoursForChainIdStats(
+        chainId
       )
-      if (uniqueUsers.err) {
-        return uniqueUsers
-      }
+    if (errorCount24.err) {
+      return errorCount24
+    }
 
-      const responseTimeMs =
-        await this.storageRepo.getResponseTimeStatsForChainIdStats(
-          chainId,
-          session
-        )
-      if (responseTimeMs.err) {
-        return responseTimeMs
-      }
+    const okCount = await this.storageRepo.getOkRecordsCountForChainIdStats(
+      chainId
+    )
+    if (okCount.err) {
+      return okCount
+    }
 
-      const responseTimeMs24 =
-        await this.storageRepo.getResponseTimeStatsLast24HoursForChainIdStats(
-          chainId,
-          session
-        )
-      if (responseTimeMs24.err) {
-        return responseTimeMs24
-      }
-
-      const topRpcs = await this.storageRepo.getTopChoosenRpcForChainIdStats(
-        chainId,
-        session
+    const okCount24 =
+      await this.storageRepo.getOkRecordsCountLast24HoursForChainIdStats(
+        chainId
       )
-      if (topRpcs.err) {
-        return topRpcs
-      }
+    if (okCount24.err) {
+      return okCount24
+    }
 
-      const errorCount =
-        await this.storageRepo.getErrorRecordsCountForChainIdStats(
-          chainId,
-          session
-        )
-      if (errorCount.err) {
-        return errorCount
-      }
+    const totalCount =
+      await this.storageRepo.getTotalRecordsCountForChainIdStats(chainId)
+    if (totalCount.err) {
+      return totalCount
+    }
 
-      const errorCount24 =
-        await this.storageRepo.getErrorRecordsCountLast24HoursForChainIdStats(
-          chainId,
-          session
-        )
-      if (errorCount24.err) {
-        return errorCount24
-      }
-
-      const okCount = await this.storageRepo.getOkRecordsCountForChainIdStats(
-        chainId,
-        session
+    const totalCount24 =
+      await this.storageRepo.getTotalRecordsCountLast24HoursForChainIdStats(
+        chainId
       )
-      if (okCount.err) {
-        return okCount
-      }
+    if (totalCount24.err) {
+      return totalCount24
+    }
 
-      const okCount24 =
-        await this.storageRepo.getOkRecordsCountLast24HoursForChainIdStats(
-          chainId,
-          session
-        )
-      if (okCount24.err) {
-        return okCount24
-      }
+    const avgAttempts = await this.storageRepo.getAvgAttemptsForChainIdStats(
+      chainId
+    )
+    if (avgAttempts.err) {
+      return avgAttempts
+    }
 
-      const totalCount =
-        await this.storageRepo.getTotalRecordsCountForChainIdStats(
-          chainId,
-          session
-        )
-      if (totalCount.err) {
-        return totalCount
-      }
+    const avgAttempts24 =
+      await this.storageRepo.getAvgAttemptsLast24HoursForChainIdStats(chainId)
+    if (avgAttempts24.err) {
+      return avgAttempts24
+    }
 
-      const totalCount24 =
-        await this.storageRepo.getTotalRecordsCountLast24HoursForChainIdStats(
-          chainId,
-          session
-        )
-      if (totalCount24.err) {
-        return totalCount24
-      }
-
-      const avgAttempts = await this.storageRepo.getAvgAttemptsForChainIdStats(
-        chainId,
-        session
-      )
-      if (avgAttempts.err) {
-        return avgAttempts
-      }
-
-      const avgAttempts24 =
-        await this.storageRepo.getAvgAttemptsLast24HoursForChainIdStats(
-          chainId,
-          session
-        )
-      if (avgAttempts24.err) {
-        return avgAttempts24
-      }
-
-      return Ok({
-        popularRpc: popularRpc.val.unwrapOr(''),
-        uniqueUsers: uniqueUsers.val,
-        responseTimeMs: responseTimeMs.val,
-        responseTimeMs24: responseTimeMs24.val,
-        topRpcs: topRpcs.val,
-        errorCount: errorCount.val,
-        errorCount24: errorCount24.val,
-        okCount: okCount.val,
-        okCount24: okCount24.val,
-        totalCount: totalCount.val,
-        totalCount24: totalCount24.val,
-        avgAttempts: avgAttempts.val,
-        avgAttempts24: avgAttempts24.val,
-      })
+    return Ok({
+      popularRpc: popularRpc.val.unwrapOr(''),
+      uniqueUsers: uniqueUsers.val,
+      responseTimeMs: responseTimeMs.val,
+      responseTimeMs24: responseTimeMs24.val,
+      topRpcs: topRpcs.val,
+      errorCount: errorCount.val,
+      errorCount24: errorCount24.val,
+      okCount: okCount.val,
+      okCount24: okCount24.val,
+      totalCount: totalCount.val,
+      totalCount24: totalCount24.val,
+      avgAttempts: avgAttempts.val,
+      avgAttempts24: avgAttempts24.val,
     })
   }
 }
