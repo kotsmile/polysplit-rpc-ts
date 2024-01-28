@@ -303,10 +303,7 @@
   {
     "chainId": "338",
     "name": "Cronos Testnet",
-    "rpcs": [
-      "https://evm-t3.cronos.org",
-      "https://evm-t3.cronos.org/"
-    ]
+    "rpcs": ["https://evm-t3.cronos.org", "https://evm-t3.cronos.org/"]
   },
   {
     "chainId": "369",
@@ -342,9 +339,7 @@
   {
     "chainId": "599",
     "name": "Metis Goerli Testnet",
-    "rpcs": [
-      "https://goerli.gateway.metisdevops.link"
-    ]
+    "rpcs": ["https://goerli.gateway.metisdevops.link"]
   },
   {
     "chainId": "943",

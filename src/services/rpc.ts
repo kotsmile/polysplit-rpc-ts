@@ -16,7 +16,7 @@ export class RpcService {
   constructor(
     private cacheRepo: CacheRepo,
     private chainlistClient: ChainlistClient
-  ) { }
+  ) {}
 
   getRpcKey(chainId: string): string {
     return `${this.RPC_KEY}.${chainId}`
