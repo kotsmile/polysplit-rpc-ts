@@ -110,19 +110,6 @@
     ]
   },
   {
-    "chainId": "25",
-    "name": "Cronos Mainnet",
-    "rpcs": [
-      "https://evm.cronos.org",
-      "https://cronos-evm.publicnode.com",
-      "https://evm.cronos.org",
-      "https://cronos-rpc.elk.finance/",
-      "https://cronos.blockpi.network/v1/rpc/public",
-      "https://cronos-evm.publicnode.com",
-      "https://1rpc.io/cro"
-    ]
-  },
-  {
     "chainId": "56",
     "name": "BNB Smart Chain Mainnet",
     "rpcs": [
@@ -178,18 +165,6 @@
     ]
   },
   {
-    "chainId": "66",
-    "name": "OKXChain Mainnet",
-    "rpcs": [
-      "https://exchainrpc.okex.org",
-      "https://okc-mainnet.gateway.pokt.network/v1/lb/6275309bea1b320039c893ff",
-      "https://exchainrpc.okex.org",
-      "https://oktc-mainnet.public.blastapi.io",
-      "https://okt-chain.api.onfinality.io/public",
-      "https://1rpc.io/oktc"
-    ]
-  },
-  {
     "chainId": "97",
     "name": "BNB Smart Chain Testnet",
     "rpcs": [
@@ -206,35 +181,6 @@
       "https://bsc-testnet.publicnode.com",
       "https://api.zan.top/node/v1/bsc/testnet/public",
       "https://bsc-testnet.blockpi.network/v1/rpc/public"
-    ]
-  },
-  {
-    "chainId": "100",
-    "name": "Gnosis",
-    "rpcs": [
-      "https://rpc.gnosischain.com",
-      "https://rpc.gnosis.gateway.fm",
-      "https://rpc.ankr.com/gnosis",
-      "https://gnosischain-rpc.gateway.pokt.network",
-      "https://gnosis-mainnet.public.blastapi.io",
-      "https://gnosis.api.onfinality.io/public",
-      "https://gnosis.blockpi.network/v1/rpc/public",
-      "https://web3endpoints.com/gnosischain-mainnet",
-      "https://gnosis.oat.farm",
-      "https://gnosis.publicnode.com",
-      "https://rpc.gnosischain.com",
-      "https://xdai-archive.blockscout.com",
-      "https://gnosis-pokt.nodies.app",
-      "https://rpc.gnosis.gateway.fm",
-      "https://gnosis-mainnet.public.blastapi.io",
-      "https://rpc.ankr.com/gnosis",
-      "https://rpc.ap-southeast-1.gateway.fm/v4/gnosis/non-archival/mainnet",
-      "https://gnosis.blockpi.network/v1/rpc/public",
-      "https://gnosis.api.onfinality.io/public",
-      "https://gnosis.drpc.org",
-      "https://endpoints.omniatech.io/v1/gnosis/mainnet/public",
-      "https://gnosis.publicnode.com",
-      "https://1rpc.io/gnosis"
     ]
   },
   {
@@ -332,11 +278,6 @@
     ]
   },
   {
-    "chainId": "599",
-    "name": "Metis Goerli Testnet",
-    "rpcs": ["https://goerli.gateway.metisdevops.link"]
-  },
-  {
     "chainId": "943",
     "name": "PulseChain Testnet v4",
     "rpcs": [
@@ -357,17 +298,6 @@
       "https://rpc.ankr.com/klaytn_testnet",
       "https://klaytn-baobab.blockpi.network/v1/rpc/public",
       "https://klaytn.api.onfinality.io/public"
-    ]
-  },
-  {
-    "chainId": "1088",
-    "name": "Metis Andromeda Mainnet",
-    "rpcs": [
-      "https://andromeda.metis.io/?owner=1088",
-      "https://andromeda.metis.io/?owner=1088",
-      "https://metis-mainnet.public.blastapi.io",
-      "https://metis.api.onfinality.io/public",
-      "https://metis-pokt.nodies.app"
     ]
   },
   {
