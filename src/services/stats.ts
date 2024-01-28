@@ -36,6 +36,10 @@ export class StatsService {
   constructor(private storageRepo: StorageRepo) {}
 
   async insertStats(stats: Omit<Stats, 'date'>): Promise<Result<void, string>> {
+    if (env.ENV === 'development') {
+      return Ok(undefined)
+    }
+
     return await this.storageRepo.insertStats({
       ...stats,
       date: new Date().toUTCString(),
