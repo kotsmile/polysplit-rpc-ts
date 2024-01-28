@@ -1,13 +1,19 @@
 import { Result, Option, Ok } from 'ts-results'
 import { z } from 'zod'
 
-import type { StorageRepo, Stats } from '@/internal/repo/storage'
+import type { StorageRepo } from '@/internal/repo/storage'
 import { env } from '@/env'
+import { Stats } from '@prisma/client'
 
 export const StatsPerChainSchema = z.object({
   popularRpc: z.string(),
   uniqueUsers: z.number().int(),
   responseTimeMs: z.object({
+    avg: z.number(),
+    min: z.number(),
+    max: z.number(),
+  }),
+  responseTimeMs24: z.object({
     avg: z.number(),
     min: z.number(),
     max: z.number(),
@@ -33,16 +39,18 @@ export const StatsSharedSchema = z.object({
 type StatsShared = z.infer<typeof StatsSharedSchema>
 
 export class StatsService {
-  constructor(private storageRepo: StorageRepo) { }
+  constructor(private storageRepo: StorageRepo) {}
 
-  async insertStats(stats: Omit<Stats, 'date'>): Promise<Result<void, string>> {
+  async insertStats(
+    stats: Omit<Stats, 'created_at' | 'id'>
+  ): Promise<Result<void, string>> {
     if (env.ENV === 'development') {
       return Ok(undefined)
     }
 
     return await this.storageRepo.insertStats({
       ...stats,
-      date: new Date().toUTCString(),
+      created_at: new Date(),
     })
   }
 
@@ -100,6 +108,15 @@ export class StatsService {
         )
       if (responseTimeMs.err) {
         return responseTimeMs
+      }
+
+      const responseTimeMs24 =
+        await this.storageRepo.getResponseTimeStatsLast24HoursForChainIdStats(
+          chainId,
+          session
+        )
+      if (responseTimeMs24.err) {
+        return responseTimeMs24
       }
 
       const topRpcs = await this.storageRepo.getTopChoosenRpcForChainIdStats(
@@ -184,6 +201,7 @@ export class StatsService {
         popularRpc: popularRpc.val.unwrapOr(''),
         uniqueUsers: uniqueUsers.val,
         responseTimeMs: responseTimeMs.val,
+        responseTimeMs24: responseTimeMs24.val,
         topRpcs: topRpcs.val,
         errorCount: errorCount.val,
         errorCount24: errorCount24.val,

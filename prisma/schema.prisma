@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("PSQL_DB_URL")
 }
 
 generator zod {
@@ -21,24 +21,14 @@ model Stats {
   id Int @id @default(autoincrement())
 
   chainId String
-  date    DateTime
   status  StatsStatus
 
   responseTimeMs Int
-  chooseRpc      String
-  ip             String
+  choosenRpc     String
+  ip             String?
   isLanding      Boolean
   attempts       Int
-}
+  errorMessage   String?
 
-// export interface Stats {
-//   status: 'ok' | 'error'
-//   chainId: string
-//   responseTimeMs: number
-//   choosenRpc?: string
-//   errorMessage?: string
-//   date: string
-//   ip?: string
-//   isLanding?: boolean
-//   attempts?: number
-// }
+  created_at DateTime @default(now())
+}

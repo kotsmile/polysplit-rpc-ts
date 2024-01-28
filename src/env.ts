@@ -24,8 +24,6 @@ export const env = zennv({
 
     PROXYSELLER_API_KEY: z.string(),
 
-    MONGO_DB_URL: z.string(),
-    MONGO_DB_NAME: z.string(),
-    MONGO_DB_STATS_COLLECTION: z.string(),
+    PSQL_DB_URL: z.string(),
   }),
 })

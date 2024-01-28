@@ -4,12 +4,13 @@ import { rpcService, evmService, statsService } from '@/impl'
 
 import { endTimer, logger, startTimer } from '@/utils'
 import { env } from '@/env'
+import { StatsStatus } from '@prisma/client'
 
 const WELCOME_MESSAGE =
   'If you have any questions or requests, just visit our website https://polysplit.cloud'
 
 export async function postChainControllerV1(req: Request, res: Response) {
-  const ip = req.header('x-forwarded-for') ?? req.socket.remoteAddress
+  const ip = req.header('x-forwarded-for') ?? req.socket.remoteAddress ?? null
   const isLanding = req.query.site !== undefined
 
   const start = startTimer()
@@ -21,11 +22,13 @@ export async function postChainControllerV1(req: Request, res: Response) {
     const time = endTimer(start)
     await statsService.insertStats({
       chainId,
-      status: 'error',
+      status: StatsStatus.ERROR,
       responseTimeMs: time,
       errorMessage: `chainId: ${chainId} is not supported`,
       ip,
       isLanding,
+      attempts: -1,
+      choosenRpc: '',
     })
     return res.status(404).send(WELCOME_MESSAGE)
   }
@@ -36,11 +39,13 @@ export async function postChainControllerV1(req: Request, res: Response) {
     const time = endTimer(start)
     await statsService.insertStats({
       chainId,
-      status: 'error',
+      status: StatsStatus.ERROR,
       responseTimeMs: time,
       errorMessage: `faield to get rpcs for chainId: ${chainId}: ${rpcs.val}`,
       ip,
       isLanding,
+      attempts: -1,
+      choosenRpc: '',
     })
     return res.status(505).send(WELCOME_MESSAGE)
   }
@@ -50,11 +55,13 @@ export async function postChainControllerV1(req: Request, res: Response) {
     const time = endTimer(start)
     await statsService.insertStats({
       chainId,
-      status: 'error',
+      status: StatsStatus.ERROR,
       responseTimeMs: time,
       errorMessage: `no rpcs for chainId: ${chainId}`,
       ip,
       isLanding,
+      attempts: -1,
+      choosenRpc: '',
     })
     return res.status(500).send(WELCOME_MESSAGE)
   }
@@ -72,12 +79,13 @@ export async function postChainControllerV1(req: Request, res: Response) {
     const time = endTimer(start)
     await statsService.insertStats({
       chainId,
-      status: 'ok',
-      choosenRpc: url,
+      status: StatsStatus.OK,
       responseTimeMs: time,
       ip,
       isLanding,
       attempts,
+      errorMessage: '',
+      choosenRpc: url,
     })
     return res.send(response.val)
   }
@@ -86,11 +94,13 @@ export async function postChainControllerV1(req: Request, res: Response) {
   const time = endTimer(start)
   await statsService.insertStats({
     chainId,
-    status: 'error',
+    status: StatsStatus.ERROR,
     responseTimeMs: time,
     errorMessage: `failed to request all RPCs for chainId: ${chainId}`,
     ip,
     isLanding,
+    attempts: -1,
+    choosenRpc: '',
   })
   return res.status(500).send(WELCOME_MESSAGE)
 }

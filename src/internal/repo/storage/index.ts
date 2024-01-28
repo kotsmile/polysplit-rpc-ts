@@ -1,41 +1,19 @@
-import { ClientSession, Collection, Document, MongoClient } from 'mongodb'
 import { Err, None, Ok, Option, Result, Some } from 'ts-results'
+import { PrismaClient, Stats, StatsStatus } from '@prisma/client'
 
 import { safe } from '@/utils'
 
-type CollectionMetadata<T extends Document> = {
-  db: string
-  collection: string
-  _type: T
-}
-
-export interface Stats {
-  status: 'ok' | 'error'
-  chainId: string
-  responseTimeMs: number
-  choosenRpc?: string
-  errorMessage?: string
-  date: string
-  ip?: string
-  isLanding?: boolean
-  attempts?: number
-}
-
-export const StatsCollection: CollectionMetadata<Stats> = {
-  db: 'main',
-  collection: 'stats',
-  _type: {} as Stats,
-}
+type StorageSession = Parameters<Parameters<PrismaClient['$transaction']>[0]>[0]
 
 export class StorageRepo {
-  client: MongoClient
+  client: PrismaClient
 
-  constructor(mongoDbConnectionUrl: string) {
-    this.client = new MongoClient(mongoDbConnectionUrl)
+  constructor(psqlDbConnectionUrl: string) {
+    this.client = new PrismaClient({ datasourceUrl: psqlDbConnectionUrl })
   }
 
   async connect(): Promise<Result<void, string>> {
-    const response = await safe(this.client.connect())
+    const response = await safe(this.client.$connect())
     if (response.err) {
       return Err(`failed to connect storage doc repo: ${response.val}`)
     }
@@ -44,7 +22,7 @@ export class StorageRepo {
   }
 
   async disconnect(): Promise<Result<void, string>> {
-    const response = await safe(this.client.close())
+    const response = await safe(this.client.$disconnect())
     if (response.err) {
       return Err(`failed to disconnect storage doc repo: ${response.val}`)
     }
@@ -53,375 +31,324 @@ export class StorageRepo {
   }
 
   async withTx<T>(
-    callback: (session: ClientSession) => Promise<Result<T, string>>
+    callback: (session: StorageSession) => Promise<Result<T, string>>
   ): Promise<Result<T, string>> {
-    const session = this.client.startSession()
-    const result = await safe(session.withTransaction(() => callback(session)))
-    await session.endSession()
+    const result = await safe(
+      this.client.$transaction(async (tx) => await callback(tx))
+    )
     if (result.err) {
       return Err(`failed to execute transaction: ${result.val}`)
     }
-
     return result.val
   }
 
-  getCollection<T extends Document>({
-    db,
-    collection,
-  }: CollectionMetadata<T>): Collection<T> {
-    return this.client.db(db).collection<T>(collection)
-  }
-
-  async insertStats(stats: Stats): Promise<Result<void, string>> {
-    return (
-      await safe(this.getCollection(StatsCollection).insertOne(stats))
-    ).map(() => undefined)
-  }
-
-  async getTotalRecordsWithIsLandingStats(
-    session?: ClientSession
-  ): Promise<Result<number, string>> {
-    return await safe(
-      this.getCollection(StatsCollection).countDocuments(
-        {
-          isLanding: true,
-        },
-        { session }
-      )
+  async insertStats(stats: Omit<Stats, 'id'>): Promise<Result<void, string>> {
+    return (await safe(this.client.stats.create({ data: stats }))).map(
+      () => undefined
     )
   }
 
-  async getTotalRecordsWithIsLandingLast24HoursStats(
-    session?: ClientSession
+  async getTotalRecordsWithIsLandingStats(
+    session?: StorageSession
   ): Promise<Result<number, string>> {
+    const executer = session ?? this.client
     return await safe(
-      this.getCollection(StatsCollection).countDocuments(
-        {
+      executer.stats.count({
+        where: { isLanding: true },
+      })
+    )
+  }
+
+  getDate24HoursAgo() {
+    return new Date(Date.now() - 24 * 60 * 60 * 1000)
+  }
+
+  async getTotalRecordsWithIsLandingLast24HoursStats(
+    session?: StorageSession
+  ): Promise<Result<number, string>> {
+    const executer = session ?? this.client
+    return await safe(
+      executer.stats.count({
+        where: {
           isLanding: true,
-          date: {
-            $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
+          created_at: {
+            gte: this.getDate24HoursAgo(),
           },
         },
-        { session }
-      )
+      })
     )
   }
 
   async getPopularRpcForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<Option<string>, string>> {
+    const executer = session ?? this.client
     const response = await safe(
-      this.getCollection(StatsCollection)
-        .aggregate(
-          [
-            { $match: { chainId } },
-            { $group: { _id: '$choosenRpc', count: { $sum: 1 } } },
-            { $sort: { count: -1 } },
-            { $limit: 1 },
-          ],
-          { session }
-        )
-        .tryNext()
+      executer.stats.groupBy({
+        by: ['choosenRpc'],
+        where: { chainId, status: StatsStatus.OK },
+        _count: {
+          choosenRpc: true,
+        },
+        orderBy: {
+          _count: {
+            choosenRpc: 'desc',
+          },
+        },
+        take: 1,
+      })
     )
     if (response.err) {
       return response
     }
-    if (response.val === null) {
+
+    const firstElement = response.val[0]
+    if (firstElement === undefined) {
       return Ok(None)
     }
 
-    return Ok(Some((response.val as unknown as { _id: string })._id))
+    return Ok(Some(firstElement.choosenRpc))
   }
 
   async getUniqueUsersForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<number, string>> {
+    const executer = session ?? this.client
     const response = await safe(
-      this.getCollection(StatsCollection).distinct(
-        'ip',
-        { chainId },
-        { session }
-      )
+      executer.stats
+        .findMany({
+          where: { chainId },
+          distinct: ['ip'],
+          select: { ip: true },
+        })
+        .then((v) => v.length)
     )
     return response
-      .map((v) => v.length)
-      .mapErr(
-        (err) => `failed to get unique users for chainId ${chainId}: ${err}`
-      )
   }
 
   async getResponseTimeStatsForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<{ avg: number; max: number; min: number }, string>> {
+    const executer = session ?? this.client
     const response = await safe(
-      this.getCollection(StatsCollection)
-        .aggregate(
-          [
-            {
-              $match: { chainId, status: 'ok' },
-            },
-            {
-              $group: {
-                _id: '$chainId',
-                min: { $min: '$responseTimeMs' },
-                max: { $max: '$responseTimeMs' },
-                avg: { $avg: '$responseTimeMs' },
-              },
-            },
-          ],
-          { session }
-        )
-        .toArray()
+      executer.stats.aggregate({
+        where: { chainId, status: StatsStatus.OK, responseTimeMs: { not: 0 } },
+        _avg: {
+          responseTimeMs: true,
+        },
+        _max: {
+          responseTimeMs: true,
+        },
+        _min: {
+          responseTimeMs: true,
+        },
+      })
     )
     if (response.err) {
       return response
     }
-    if (response.val.length === 0) {
-      return Err(`failed to find chainId ${chainId}`)
-    }
 
-    const s = response.val[0]
-    if (s === undefined) {
-      return Err(`no stats ${response.val}`)
-    }
-
-    return Ok({ avg: s.avg, min: s.min, max: s.max })
+    const { _avg, _min, _max } = response.val
+    return Ok({
+      avg: _avg.responseTimeMs ?? -1,
+      min: _min.responseTimeMs ?? -1,
+      max: _max.responseTimeMs ?? -1,
+    })
   }
 
   async getResponseTimeStatsLast24HoursForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<
     Result<
       {
-        minResponseTimeMs: number
-        maxResponseTimeMs: number
-        avgResponseTimeMs: number
+        min: number
+        max: number
+        avg: number
       },
       string
     >
   > {
-    return (
-      await safe(
-        this.getCollection(StatsCollection)
-          .aggregate(
-            [
-              {
-                $match: {
-                  chainId,
-                  status: 'ok',
-                  date: {
-                    $gte: new Date(
-                      Date.now() - 24 * 60 * 60 * 1000
-                    ).toUTCString(),
-                  },
-                },
-              },
-              {
-                $group: {
-                  _id: null,
-                  minResponseTimeMs: { $min: '$responseTimeMs' },
-                  maxResponseTimeMs: { $max: '$responseTimeMs' },
-                  avgResponseTimeMs: { $avg: '$responseTimeMs' },
-                },
-              },
-            ],
-            { session }
-          )
-          .toArray()
-      )
-    ).map(
-      (v) =>
-        v[0] as {
-          minResponseTimeMs: number
-          maxResponseTimeMs: number
-          avgResponseTimeMs: number
-        }
+    const executer = session ?? this.client
+    const response = await safe(
+      executer.stats.aggregate({
+        where: {
+          chainId,
+          status: StatsStatus.OK,
+          responseTimeMs: { not: 0 },
+          created_at: {
+            gte: this.getDate24HoursAgo(),
+          },
+        },
+        _avg: {
+          responseTimeMs: true,
+        },
+        _max: {
+          responseTimeMs: true,
+        },
+        _min: {
+          responseTimeMs: true,
+        },
+      })
     )
+    if (response.err) {
+      return response
+    }
+
+    const { _avg, _min, _max } = response.val
+    return Ok({
+      avg: _avg.responseTimeMs ?? -1,
+      min: _min.responseTimeMs ?? -1,
+      max: _max.responseTimeMs ?? -1,
+    })
   }
 
   async getTopChoosenRpcForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<string[], string>> {
-    return (
-      await safe(
-        this.getCollection(StatsCollection)
-          .aggregate(
-            [
-              { $match: { chainId } },
-              { $group: { _id: '$choosenRpc', count: { $sum: 1 } } },
-              { $sort: { count: -1 } },
-              { $limit: 10 },
-            ],
-            { session }
-          )
-          .toArray()
-      )
-    ).map((v) => v.filter((el) => el._id).map((el) => el._id as string))
+    const executer = session ?? this.client
+    const response = await safe(
+      executer.stats.groupBy({
+        by: ['choosenRpc'],
+        where: { chainId, status: StatsStatus.OK },
+        _count: {
+          choosenRpc: true,
+        },
+        orderBy: {
+          _count: {
+            choosenRpc: 'desc',
+          },
+        },
+        take: 10,
+      })
+    )
+    return response.map((v) => v.map((v) => v.choosenRpc))
   }
 
   async getErrorRecordsCountForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<number, string>> {
+    const executer = session ?? this.client
     return await safe(
-      this.getCollection(StatsCollection).countDocuments(
-        {
-          chainId,
-          status: 'error',
-        },
-        { session }
-      )
+      executer.stats.count({
+        where: { chainId, status: StatsStatus.ERROR },
+      })
     )
   }
 
   async getErrorRecordsCountLast24HoursForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<number, string>> {
+    const executer = session ?? this.client
     return await safe(
-      this.getCollection(StatsCollection).countDocuments(
-        {
+      executer.stats.count({
+        where: {
           chainId,
-          status: 'error',
-          date: {
-            $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
-          },
+          status: StatsStatus.ERROR,
+          created_at: { gte: this.getDate24HoursAgo() },
         },
-        { session }
-      )
+      })
     )
   }
 
   async getOkRecordsCountForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<number, string>> {
+    const executer = session ?? this.client
     return await safe(
-      this.getCollection(StatsCollection).countDocuments(
-        {
-          chainId: chainId,
-          status: 'ok',
-        },
-        { session }
-      )
+      executer.stats.count({
+        where: { chainId, status: StatsStatus.OK },
+      })
     )
   }
 
   async getOkRecordsCountLast24HoursForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<number, string>> {
+    const executer = session ?? this.client
     return await safe(
-      this.getCollection(StatsCollection).countDocuments(
-        {
+      executer.stats.count({
+        where: {
           chainId,
-          status: 'ok',
-          date: {
-            $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
-          },
+          status: StatsStatus.OK,
+          created_at: { gte: this.getDate24HoursAgo() },
         },
-        { session }
-      )
+      })
     )
   }
 
   async getTotalRecordsCountForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<number, string>> {
+    const executer = session ?? this.client
     return await safe(
-      this.getCollection(StatsCollection).countDocuments(
-        {
-          chainId: chainId,
-        },
-        { session }
-      )
+      executer.stats.count({
+        where: { chainId },
+      })
     )
   }
 
   async getTotalRecordsCountLast24HoursForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<number, string>> {
+    const executer = session ?? this.client
     return await safe(
-      this.getCollection(StatsCollection).countDocuments(
-        {
+      executer.stats.count({
+        where: {
           chainId,
-          date: {
-            $gte: new Date(Date.now() - 24 * 60 * 60 * 1000).toUTCString(),
-          },
+          created_at: { gte: this.getDate24HoursAgo() },
         },
-        { session }
-      )
+      })
     )
   }
 
   async getAvgAttemptsLast24HoursForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<number, string>> {
-    return (
-      await safe(
-        this.getCollection(StatsCollection)
-          .aggregate(
-            [
-              {
-                $match: {
-                  chainId,
-                  status: 'ok',
-                  date: {
-                    $gte: new Date(
-                      Date.now() - 24 * 60 * 60 * 1000
-                    ).toUTCString(),
-                  },
-                },
-              },
-              {
-                $group: {
-                  _id: null,
-                  avgAttempts: { $avg: '$attempts' },
-                },
-              },
-            ],
-            { session }
-          )
-          .toArray()
-      )
-    ).map((v) => v[0]?.avgAttempts as number)
+    const executer = session ?? this.client
+    const response = await safe(
+      executer.stats.aggregate({
+        where: {
+          chainId,
+          status: StatsStatus.OK,
+          created_at: { gte: this.getDate24HoursAgo() },
+        },
+        _avg: {
+          attempts: true,
+        },
+      })
+    )
+    return response.map((v) => v._avg.attempts ?? -1)
   }
 
   async getAvgAttemptsForChainIdStats(
     chainId: string,
-    session?: ClientSession
+    session?: StorageSession
   ): Promise<Result<number, string>> {
-    return (
-      await safe(
-        this.getCollection(StatsCollection)
-          .aggregate(
-            [
-              {
-                $match: {
-                  chainId,
-                  status: 'ok',
-                },
-              },
-              {
-                $group: {
-                  _id: null,
-                  avgAttempts: { $avg: '$attempts' },
-                },
-              },
-            ],
-            { session }
-          )
-          .toArray()
-      )
-    ).map((v) => v[0]?.avgAttempts as number)
+    const executer = session ?? this.client
+    const response = await safe(
+      executer.stats.aggregate({
+        where: {
+          chainId,
+          status: StatsStatus.OK,
+        },
+        _avg: {
+          attempts: true,
+        },
+      })
+    )
+    return response.map((v) => v._avg.attempts ?? -1)
   }
 }
 
