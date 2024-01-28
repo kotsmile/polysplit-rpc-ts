@@ -14,7 +14,7 @@
     "gen:client": "yarn openapi-zod-client ./openapi.yml -o ../polysplit-landing/api/client.ts",
     "gen:doc": "yarn do gen-doc",
     "prisma:create": "prisma migrate dev --create-only",
-    "prisma:apply": "yarn prisma:apply && prisma migrate deploy"
+    "prisma:apply": "prisma migrate deploy"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
