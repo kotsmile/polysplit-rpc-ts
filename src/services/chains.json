@@ -224,29 +224,6 @@
     ]
   },
   {
-    "chainId": "250",
-    "name": "Fantom Opera",
-    "rpcs": [
-      "https://rpc.ftm.tools",
-      "https://fantom.publicnode.com",
-      "https://rpcapi.fantom.network",
-      "https://endpoints.omniatech.io/v1/fantom/mainnet/public",
-      "https://fantom-pokt.nodies.app",
-      "https://rpc.ftm.tools/",
-      "https://rpc.ankr.com/fantom",
-      "https://rpc.fantom.network",
-      "https://rpc2.fantom.network",
-      "https://rpc3.fantom.network",
-      "https://fantom-mainnet.public.blastapi.io",
-      "https://1rpc.io/ftm",
-      "https://fantom.blockpi.network/v1/rpc/public",
-      "https://fantom.publicnode.com",
-      "https://fantom.api.onfinality.io/public",
-      "https://rpc.fantom.gateway.fm",
-      "https://fantom.drpc.org"
-    ]
-  },
-  {
     "chainId": "369",
     "name": "PulseChain",
     "rpcs": [
@@ -312,20 +289,6 @@
       "https://polygon-zkevm-mainnet.public.blastapi.io",
       "https://api.zan.top/node/v1/polygonzkevm/mainnet/public",
       "https://polygon-zkevm.drpc.org"
-    ]
-  },
-  {
-    "chainId": "4002",
-    "name": "Fantom Testnet",
-    "rpcs": [
-      "https://rpc.testnet.fantom.network",
-      "https://fantom-testnet.publicnode.com",
-      "https://rpc.testnet.fantom.network/",
-      "https://endpoints.omniatech.io/v1/fantom/testnet/public",
-      "https://rpc.ankr.com/fantom_testnet",
-      "https://fantom-testnet.public.blastapi.io",
-      "https://fantom-testnet.publicnode.com",
-      "https://fantom.api.onfinality.io/public"
     ]
   },
   {

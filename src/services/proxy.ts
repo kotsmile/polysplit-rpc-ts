@@ -18,7 +18,7 @@ export type ProxyConfig = {
 
 export class ProxyService {
   PROXY_KEY = 'proxies'
-  proxyId = -1
+  proxyId = 10
 
   constructor(
     private cache: CacheRepo,

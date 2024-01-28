@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
 
-import { rpcService, evmService, statsService } from '@/impl'
+import { rpcService, evmService, statsService, proxyService } from '@/impl'
 
 import { endTimer, logger, startTimer } from '@/utils'
 import { env } from '@/env'
@@ -71,12 +71,16 @@ export async function postChainControllerV1(req: Request, res: Response) {
     attempts++
     const response = await evmService.rpcRequest(url, req.body)
     if (response.err) {
+      if (response.val.type === 'proxy') {
+        logger.warn('change proxy')
+        await proxyService.rotateProxy()
+      }
       logger.error(`failed to request RPC ${url}: ${response.val.message}`)
       continue
     }
 
-    logger.debug(`success: chainId ${chainId} with rpc: ${url}`)
     const time = endTimer(start)
+    logger.info(`success: chainId ${chainId} with rpc: ${url} (${time}ms)`)
     await statsService.insertStats({
       chainId,
       status: StatsStatus.OK,

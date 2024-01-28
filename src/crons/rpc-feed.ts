@@ -70,7 +70,7 @@ export async function rpcFeedCron() {
       return false
     }
 
-    logger.debug(
+    logger.info(
       `ChainId: ${chainId}, Best time: ${sortedOkMetrics[0]?.metrics.responseTime}`
     )
   }

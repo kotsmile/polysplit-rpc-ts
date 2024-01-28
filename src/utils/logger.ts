@@ -4,5 +4,5 @@ import { env } from '@/env'
 
 export const logger = new Logger({
   maskValuesOfKeys: Object.keys(env),
-  minLevel: 3,
+  // minLevel: 3,
 })
