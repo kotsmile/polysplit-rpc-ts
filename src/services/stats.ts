@@ -39,7 +39,7 @@ export const StatsSharedSchema = z.object({
 type StatsShared = z.infer<typeof StatsSharedSchema>
 
 export class StatsService {
-  constructor(private storageRepo: StorageRepo) { }
+  constructor(private storageRepo: StorageRepo) {}
 
   async insertStats(
     stats: Omit<Stats, 'id' | 'created_at'>
