@@ -13,15 +13,16 @@ export type EvmError = {
 export class EvmService {
   constructor(
     private proxyService: ProxyService,
-    private maxResponseTimeMs: number
-  ) {}
+    public maxResponseTimeMs: number
+  ) { }
 
   async rpcRequest(
     url: string,
-    body: unknown
+    body: unknown,
+    maxResponseTimeMs = this.maxResponseTimeMs
   ): Promise<Result<unknown, EvmError>> {
     const response = await safeWithError(
-      this.proxyService.proxyPostRequest(url, body, this.maxResponseTimeMs)
+      this.proxyService.proxyPostRequest(url, body, maxResponseTimeMs)
     )
 
     if (response.err) {

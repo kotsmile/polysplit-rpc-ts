@@ -66,32 +66,39 @@ export async function postChainControllerV1(req: Request, res: Response) {
     return res.status(500).send(WELCOME_MESSAGE)
   }
 
-  let attempts = 0
-  for (const url of rpcs) {
-    attempts++
-    const response = await evmService.rpcRequest(url, req.body)
-    if (response.err) {
-      if (response.val.type === 'proxy') {
-        logger.warn('change proxy')
-        await proxyService.rotateProxy()
+  for (let j = 1; j < 3; j++) {
+    const responseTimeMs = evmService.maxResponseTimeMs
+    let attempts = 0
+    for (const url of rpcs) {
+      attempts++
+      const response = await evmService.rpcRequest(
+        url,
+        req.body,
+        responseTimeMs * j
+      )
+      if (response.err) {
+        if (response.val.type === 'proxy') {
+          logger.warn('change proxy')
+          await proxyService.rotateProxy()
+        }
+        logger.error(`failed to request RPC ${url}: ${response.val.message}`)
+        continue
       }
-      logger.error(`failed to request RPC ${url}: ${response.val.message}`)
-      continue
-    }
 
-    const time = endTimer(start)
-    logger.info(`success: chainId ${chainId} with rpc: ${url} (${time}ms)`)
-    await statsService.insertStats({
-      chainId,
-      status: StatsStatus.OK,
-      responseTimeMs: time,
-      ip,
-      isLanding,
-      attempts,
-      errorMessage: '',
-      choosenRpc: url,
-    })
-    return res.send(response.val)
+      const time = endTimer(start)
+      logger.info(`success: chainId ${chainId} with rpc: ${url} (${time}ms)`)
+      await statsService.insertStats({
+        chainId,
+        status: StatsStatus.OK,
+        responseTimeMs: time,
+        ip,
+        isLanding,
+        attempts,
+        errorMessage: '',
+        choosenRpc: url,
+      })
+      return res.send(response.val)
+    }
   }
 
   logger.error(`failed to request all RPCs for chainId: ${chainId}`)
