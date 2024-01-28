@@ -1,8 +1,11 @@
 import { statsService } from '@/impl'
-import { createAndRunCronJob } from '@/utils'
+import { createAndRunCronJob, logger } from '@/utils'
 
 async function statsRotationCron(): Promise<boolean> {
-  return await statsService.rotate().then((v) => v.ok)
+  logger.info('Start stats rotation')
+  const response = await statsService.rotate().then((v) => v.ok)
+  logger.info('Start stats done')
+  return response
 }
 
 createAndRunCronJob('0 0 */3 * *', statsRotationCron)

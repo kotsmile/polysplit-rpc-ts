@@ -49,6 +49,14 @@ export class StorageRepo {
     )
   }
 
+  async insertManyStats(
+    stats: Omit<Stats, 'id'>[]
+  ): Promise<Result<number, string>> {
+    return (await safe(this.client.stats.createMany({ data: stats }))).map(
+      (v) => v.count
+    )
+  }
+
   async rotateStats(): Promise<Result<void, string>> {
     const response = await safe(
       this.client.stats.deleteMany({

@@ -13,6 +13,8 @@ import { logger } from '@/utils'
 // init crons
 import { rpcFeedCron } from '@/crons/rpc-feed'
 import '@/crons/rpc-feed'
+import '@/crons/stats-saving'
+import '@/crons/stats-rotation'
 
 proxyService.initProxies().then((val) => {
   if (val.err) {

@@ -20,4 +20,13 @@ export class CacheRepo {
 
     return Ok(Some(value))
   }
+
+  async takeValue<T>(key: string): Promise<Result<Option<T>, string>> {
+    const value = this.cache.take<T>(key)
+    if (value === undefined) {
+      return Ok(None)
+    }
+
+    return Ok(Some(value))
+  }
 }

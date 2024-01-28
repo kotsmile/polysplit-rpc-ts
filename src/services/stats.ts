@@ -4,6 +4,7 @@ import { z } from 'zod'
 import type { StorageRepo } from '@/internal/repo/storage'
 import { env } from '@/env'
 import { Stats } from '@prisma/client'
+import { CacheRepo } from '@/internal/repo/cache'
 
 export const StatsPerChainSchema = z.object({
   popularRpc: z.string(),
@@ -38,8 +39,11 @@ export const StatsSharedSchema = z.object({
 
 type StatsShared = z.infer<typeof StatsSharedSchema>
 
+const STATS_KEY = 'stats'
+const UPDATE_BATCH = 1000
+
 export class StatsService {
-  constructor(private storageRepo: StorageRepo) {}
+  constructor(private storageRepo: StorageRepo, private cacheRepo: CacheRepo) {}
 
   async insertStats(
     stats: Omit<Stats, 'id' | 'created_at'>
@@ -48,10 +52,43 @@ export class StatsService {
       return Ok(undefined)
     }
 
-    return await this.storageRepo.insertStats({
+    const cachedStats = await this.cacheRepo.getValue<Omit<Stats, 'id'>[]>(
+      STATS_KEY
+    )
+    if (cachedStats.err) {
+      return Err(`failed to get stats from cache: ${cachedStats.val}`)
+    }
+
+    const cachedStats_: Omit<Stats, 'id'>[] = cachedStats.val.unwrapOr([])
+
+    cachedStats_.push({
       ...stats,
       created_at: new Date(),
     })
+    const response = await this.cacheRepo.setValue<Omit<Stats, 'id'>[]>(
+      STATS_KEY,
+      cachedStats_
+    )
+    if (response.err) {
+      return Err(`failed to update cache: ${response.val}`)
+    }
+
+    return Ok(undefined)
+  }
+
+  async saveStats(): Promise<Result<number, string>> {
+    const stats = await this.cacheRepo.takeValue<Omit<Stats, 'id'>[]>(STATS_KEY)
+    if (stats.err) {
+      return Err(`failed to take stats from cache: ${stats.val}`)
+    }
+    if (stats.val.none) {
+      return Ok(0)
+    }
+    if (stats.val.val.length < UPDATE_BATCH) {
+      return Ok(0)
+    }
+
+    return await this.storageRepo.insertManyStats(stats.val.val)
   }
 
   async getPopularRpcForChainId(
