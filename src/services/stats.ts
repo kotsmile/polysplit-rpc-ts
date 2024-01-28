@@ -45,16 +45,14 @@ export class StatsService {
   async insertStats(
     stats: Omit<Stats, 'id' | 'created_at'>
   ): Promise<Result<void, string>> {
-    unused$(stats)
-    return Ok(undefined)
-    // if (env.ENV === 'development') {
-    //   return Ok(undefined)
-    // }
-    //
-    // return await this.storageRepo.insertStats({
-    //   ...stats,
-    //   created_at: new Date(),
-    // })
+    if (env.ENV === 'development') {
+      return Ok(undefined)
+    }
+
+    return await this.storageRepo.insertStats({
+      ...stats,
+      created_at: new Date(),
+    })
   }
 
   async getPopularRpcForChainId(
