@@ -1,7 +1,7 @@
 import { statsService } from '@/impl'
 import { createAndRunCronJob, logger } from '@/utils'
 
-async function statsSavingCron(): Promise<boolean> {
+export async function statsSavingCron(): Promise<boolean> {
   logger.info('Stats saving')
   const response = await statsService.saveStats()
   if (response.err) {

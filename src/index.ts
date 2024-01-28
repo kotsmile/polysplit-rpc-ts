@@ -3,7 +3,7 @@ import { attachRouting } from 'express-zod-api'
 import { config } from '@/config'
 import { routing } from '@/routing'
 
-import { proxyService, rpcService, statsService } from '@/impl'
+import { proxyService, rpcService, statsService, storageRepo } from '@/impl'
 
 import { expressApp } from '@/app'
 
@@ -15,6 +15,7 @@ import { rpcFeedCron } from '@/crons/rpc-feed'
 import '@/crons/rpc-feed'
 import '@/crons/stats-saving'
 import '@/crons/stats-rotation'
+import { statsSavingCron } from '@/crons/stats-saving'
 
 proxyService.initProxies().then((val) => {
   if (val.err) {
@@ -88,7 +89,10 @@ async function initRpcs() {
 async function main() {
   const { notFoundHandler } = await attachRouting(config, routing)
   expressApp.use(notFoundHandler) // optional
-  expressApp.listen(env.PORT)
+  expressApp.listen(env.PORT).close(async () => {
+    await statsSavingCron()
+    await storageRepo.disconnect()
+  })
 
   await initRpcs()
 }

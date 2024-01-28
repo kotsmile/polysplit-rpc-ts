@@ -21,8 +21,8 @@ const proxySellerClient = new ProxySellerClient(
 )
 const chainlistClient = new ChainlistClient()
 
-const cacheRepo = new CacheRepo()
-const storageRepo = new StorageRepo(env.PSQL_DB_URL)
+export const cacheRepo = new CacheRepo()
+export const storageRepo = new StorageRepo(env.PSQL_DB_URL)
 
 export const proxyService = new ProxyService(cacheRepo, proxySellerClient)
 export const evmService = new EvmService(proxyService, env.RESPONSE_TIMEOUT_MS)
