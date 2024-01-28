@@ -49,6 +49,15 @@ export class StorageRepo {
     )
   }
 
+  async rotateStats(): Promise<Result<void, string>> {
+    const response = await safe(
+      this.client.stats.deleteMany({
+        where: { created_at: this.getDate24HoursAgo() },
+      })
+    )
+    return response.map(() => undefined)
+  }
+
   async getTotalRecordsWithIsLandingStats(
     session?: StorageSession
   ): Promise<Result<number, string>> {

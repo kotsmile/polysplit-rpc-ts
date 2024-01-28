@@ -1,4 +1,4 @@
-import { Result, Option, Ok } from 'ts-results'
+import { Result, Option, Ok, Err } from 'ts-results'
 import { z } from 'zod'
 
 import type { StorageRepo } from '@/internal/repo/storage'
@@ -79,6 +79,15 @@ export class StatsService {
       countFromLanding: countFromLanding.val,
       countFromLanding24: countFromLanding24.val,
     })
+  }
+
+  async rotate(): Promise<Result<void, string>> {
+    const response = await this.storageRepo.rotateStats()
+    if (response.err) {
+      return Err(`failed to rotate stats model: ${response.val}`)
+    }
+
+    return Ok(undefined)
   }
 
   async getStatisticOfUsageForChainId(
