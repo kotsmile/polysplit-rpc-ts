@@ -59,11 +59,24 @@ async function initRpcs() {
       continue
     }
 
-    logger.debug(`popular rpc for chainId ${chainId}: ${rpc.val.val}`)
-    const response = await rpcService.setRpcs(chainId, [rpc.val.val])
-    if (response.err) {
-      logger.warn(`failed to set rpcs for chainId ${chainId}`)
+    if (typeof rpc.val.val !== 'string') {
       continue
+    }
+
+    logger.debug(`popular rpc for chainId ${chainId}: ${rpc.val.val}`)
+    const oldRpcs = await rpcService.getRpcs(chainId)
+    if (oldRpcs.err) {
+      const response = await rpcService.setRpcs(chainId, [rpc.val.val])
+      if (response.err) {
+        logger.warn(`failed to set rpcs for chainId ${chainId}`)
+        continue
+      }
+    } else {
+      const response = await rpcService.setRpcs(chainId, [rpc.val.val])
+      if (response.err) {
+        logger.warn(`failed to set rpcs for chainId ${chainId}`)
+        continue
+      }
     }
   }
 

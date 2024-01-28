@@ -9,11 +9,13 @@ run('temp', async () => {
   }
   console.log(ids.join(','))
 
-  for (const chainId of ids) {
-    console.log('chainId', chainId)
-    const rpc = 'http://localhost:3001/v1/chain/' + chainId
-    const provider = new JsonRpcProvider(rpc)
-    const [, ms] = await timePromise(provider.getBlockNumber())
-    console.log(ms)
+  while (true) {
+    for (const chainId of ids) {
+      console.log('chainId', chainId)
+      const rpc = 'http://localhost:3001/v1/chain/' + chainId
+      const provider = new JsonRpcProvider(rpc)
+      const [, ms] = await timePromise(provider.getBlockNumber())
+      console.log(ms)
+    }
   }
 })
