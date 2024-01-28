@@ -14,7 +14,7 @@ export class EvmService {
   constructor(
     private proxyService: ProxyService,
     public maxResponseTimeMs: number
-  ) { }
+  ) {}
 
   async rpcRequest(
     url: string,
