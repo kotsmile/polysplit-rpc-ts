@@ -31,4 +31,6 @@ model Stats {
   errorMessage   String?
 
   created_at DateTime
+
+  @@index([chainId, created_at(sort: Desc)])
 }
