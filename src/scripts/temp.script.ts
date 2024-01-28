@@ -9,7 +9,8 @@ run('temp', async () => {
   }
   console.log(ids.join(','))
 
-  while (true) {
+  const a = true
+  while (a) {
     for (const chainId of ids) {
       console.log('chainId', chainId)
       const rpc = 'http://localhost:3001/v1/chain/' + chainId
